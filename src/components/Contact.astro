@@ -1,0 +1,21 @@
+---
+import Icon from './Icon.astro';
+import { profile } from '../data/profile';
+---
+<section id="contact" class="mx-auto max-w-6xl px-4 sm:px-6 py-24">
+  <div class="reveal card relative overflow-hidden p-8 sm:p-14 text-center">
+    <div class="absolute inset-0 bg-grid opacity-60" aria-hidden="true"></div>
+    <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-[36rem] h-[36rem] rounded-full bg-cyan/10 blur-3xl" aria-hidden="true"></div>
+    <div class="relative">
+      <p class="section-label">06 · Contact</p>
+      <h2 class="mt-3 font-display font-bold text-3xl sm:text-5xl tracking-tight">Let’s build something <span class="text-gradient">intelligent</span>.</h2>
+      <p class="mt-5 text-muted max-w-xl mx-auto leading-relaxed">Open to AI / ML engineering roles, collaborations on Edge AI, and conversations with people making the same journey. My inbox is always open.</p>
+      <div class="mt-8 flex flex-wrap justify-center gap-3">
+        <a href={`mailto:${profile.email}`} class="btn btn-primary"><Icon name="mail" class="w-4 h-4" /> {profile.email}</a>
+        <a href={profile.socials.linkedin} target="_blank" rel="noopener" class="btn btn-ghost"><Icon name="linkedin" class="w-4 h-4" /> LinkedIn</a>
+        <a href={profile.socials.github} target="_blank" rel="noopener" class="btn btn-ghost"><Icon name="github" class="w-4 h-4" /> GitHub</a>
+        {profile.showPhone && <a href={`tel:${profile.phone.replace(/\s/g, '')}`} class="btn btn-ghost"><Icon name="phone" class="w-4 h-4" /> {profile.phone}</a>}
+      </div>
+    </div>
+  </div>
+</section>

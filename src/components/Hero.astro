@@ -1,0 +1,73 @@
+---
+import CircuitNeuralCanvas from './CircuitNeuralCanvas.astro';
+import Icon from './Icon.astro';
+import { profile } from '../data/profile';
+import { url } from '../utils/url';
+---
+<section class="relative min-h-[100svh] flex items-center overflow-hidden">
+  <div class="absolute inset-0 bg-grid" aria-hidden="true"></div>
+  <CircuitNeuralCanvas />
+  <div class="absolute inset-0 pointer-events-none bg-gradient-to-r from-bg via-bg/70 to-transparent md:via-bg/40" aria-hidden="true"></div>
+  <div class="absolute inset-x-0 bottom-0 h-32 pointer-events-none bg-gradient-to-t from-bg to-transparent" aria-hidden="true"></div>
+
+  <div class="relative mx-auto max-w-6xl w-full px-4 sm:px-6 pt-28 pb-20">
+    <div class="max-w-2xl">
+      <p class="reveal inline-flex items-center gap-2 chip !text-xs !py-2 !px-3 mb-6">
+        <span class="relative flex h-2 w-2">
+          <span class="absolute inline-flex h-full w-full rounded-full bg-cyan opacity-75 animate-ping"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan"></span>
+        </span>
+        {profile.role} @ {profile.company} · {profile.location}
+      </p>
+
+      <h1 class="reveal font-display font-bold tracking-tight text-5xl sm:text-6xl lg:text-7xl leading-[1.02]">
+        {profile.name}
+      </h1>
+      <p class="reveal mt-5 font-display text-2xl sm:text-3xl lg:text-4xl font-semibold leading-tight">
+        <span class="text-gradient">{profile.headline}</span>
+      </p>
+
+      <p class="reveal mt-6 font-mono text-sm sm:text-base text-muted">
+        <span class="text-amber">embedded</span> <span aria-hidden="true">→</span> <span class="text-cyan">ai</span> <span aria-hidden="true">::</span>
+        <span id="typed" class="text-fg">{profile.rotating[0]}</span><span class="caret" aria-hidden="true"></span>
+      </p>
+
+      <p class="reveal mt-6 text-base sm:text-lg text-muted leading-relaxed max-w-xl">{profile.summary}</p>
+
+      <div class="reveal mt-8 flex flex-wrap gap-3">
+        <a href={url('/projects')} class="btn btn-primary">View projects <Icon name="arrow" class="w-4 h-4" /></a>
+        {profile.showResumePdf
+          ? <a href={url(`/${profile.resumePdf}`)} class="btn btn-ghost" download><Icon name="download" class="w-4 h-4" /> Download CV</a>
+          : <a href={url('/resume')} class="btn btn-ghost">Resume <Icon name="arrow" class="w-4 h-4" /></a>}
+        <a href={url('/#contact')} class="btn btn-ghost">Contact</a>
+      </div>
+
+      <div class="reveal mt-8 flex items-center gap-5 text-muted">
+        <a href={profile.socials.linkedin} target="_blank" rel="noopener" aria-label="LinkedIn" class="hover:text-cyan transition-colors"><Icon name="linkedin" class="w-6 h-6" /></a>
+        <a href={profile.socials.github} target="_blank" rel="noopener" aria-label="GitHub" class="hover:text-cyan transition-colors"><Icon name="github" class="w-6 h-6" /></a>
+        <a href={`mailto:${profile.email}`} aria-label="Email" class="hover:text-cyan transition-colors"><Icon name="mail" class="w-6 h-6" /></a>
+      </div>
+    </div>
+  </div>
+
+  <a href="#about" class="no-print absolute bottom-8 left-1/2 -translate-x-1/2 text-muted hover:text-cyan animate-float hidden sm:block" aria-label="Scroll to about">
+    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14m0 0-6-6m6 6 6-6"/></svg>
+  </a>
+</section>
+
+<script define:vars={{ words: profile.rotating }}>
+  const el = document.getElementById('typed');
+  if (el && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let w = 0, i = words[0].length, deleting = true;
+    const tick = () => {
+      const word = words[w];
+      i += deleting ? -1 : 1;
+      el.textContent = word.slice(0, i);
+      let delay = deleting ? 40 : 80;
+      if (!deleting && i === word.length) { deleting = true; delay = 2000; }
+      else if (deleting && i === 0) { deleting = false; w = (w + 1) % words.length; delay = 300; }
+      setTimeout(tick, delay);
+    };
+    setTimeout(tick, 2200);
+  }
+</script>

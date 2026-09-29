@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import { getPosts } from '../../utils/content';
+const posts = await getPosts();
+---
+<BaseLayout title="Blog" description="Writing on AI, machine learning, Edge AI and the journey from embedded systems.">
+  <section class="mx-auto max-w-6xl px-4 sm:px-6 pt-32 pb-12">
+    <SectionHeading label="Blog" title="Notes from the journey" subtitle="What I’m building, learning and breaking on the way from embedded systems to AI." />
+    {posts.length === 0
+      ? <p class="text-muted">First posts coming soon.</p>
+      : <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">{posts.map((p) => <BlogCard post={p} />)}</div>}
+  </section>
+</BaseLayout>

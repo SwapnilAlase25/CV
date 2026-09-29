@@ -1,0 +1,91 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { profile } from '../data/profile';
+import { url } from '../utils/url';
+
+interface Props { title?: string; description?: string; type?: 'website' | 'article'; }
+const { title, description = profile.summary, type = 'website' } = Astro.props;
+const fullTitle = title ? `${title} · ${profile.name}` : `${profile.name} — ${profile.role}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(url('/og.png'), Astro.site);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  jobTitle: profile.role,
+  worksFor: { '@type': 'Organization', name: profile.company },
+  email: `mailto:${profile.email}`,
+  url: new URL(url('/'), Astro.site).href,
+  sameAs: [profile.socials.linkedin, profile.socials.github],
+  knowsAbout: ['Artificial Intelligence', 'Machine Learning', 'Data Analytics', 'Edge AI', 'Embedded Systems', 'Automotive Software'],
+};
+---
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
+    <link rel="alternate" type="application/rss+xml" title={`${profile.name} — Blog`} href={url('/rss.xml')} />
+    <meta name="theme-color" content="#070b16" />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <script is:inline>
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+        var t = null;
+        try { t = localStorage.getItem('theme'); } catch (e) {}
+        if (t === 'light') d.classList.remove('dark');
+        else if (!t && window.matchMedia('(prefers-color-scheme: light)').matches) d.classList.remove('dark');
+      })();
+    </script>
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body class="min-h-screen font-sans">
+    <div id="spotlight" aria-hidden="true"></div>
+    <Nav />
+    <main class="relative z-10">
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      // Scroll reveal
+      const io = new IntersectionObserver(
+        (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }),
+        { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+      );
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+      window.addEventListener('beforeprint', () => document.querySelectorAll('.reveal').forEach((el) => el.classList.add('in')));
+
+      // Cursor spotlight (desktop only)
+      if (window.matchMedia('(pointer: fine)').matches) {
+        const s = document.getElementById('spotlight')!;
+        window.addEventListener('pointermove', (e) => {
+          s.style.setProperty('--mx', `${e.clientX}px`);
+          s.style.setProperty('--my', `${e.clientY}px`);
+        }, { passive: true });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Experience from '../components/Experience.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import Skills from '../components/Skills.astro';
+import Education from '../components/Education.astro';
+import BlogCard from '../components/BlogCard.astro';
+import Contact from '../components/Contact.astro';
+import Icon from '../components/Icon.astro';
+import { getPosts, getProjects } from '../utils/content';
+import { url } from '../utils/url';
+
+const featured = (await getProjects()).filter((p) => p.data.featured).slice(0, 3);
+const posts = (await getPosts()).slice(0, 3);
+---
+<BaseLayout>
+  <Hero />
+  <About />
+  <Experience />
+
+  <section id="projects" class="mx-auto max-w-6xl px-4 sm:px-6 py-24">
+    <SectionHeading label="03 · Projects" title="Things I’ve built" subtitle="AI projects in progress, production embedded work, and data foundations. New projects land here as I ship them." />
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {featured.map((p) => <ProjectCard project={p} />)}
+    </div>
+    <div class="reveal mt-10 text-center">
+      <a href={url('/projects')} class="btn btn-ghost">All projects <Icon name="arrow" class="w-4 h-4" /></a>
+    </div>
+  </section>
+
+  <Skills />
+  <Education />
+
+  {posts.length > 0 && (
+    <section id="writing" class="mx-auto max-w-6xl px-4 sm:px-6 py-24">
+      <SectionHeading label="Writing" title="Latest from the blog" subtitle="Notes on AI, edge intelligence and the journey from embedded to ML." />
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {posts.map((p) => <BlogCard post={p} />)}
+      </div>
+      <div class="reveal mt-10 text-center">
+        <a href={url('/blog')} class="btn btn-ghost">All posts <Icon name="arrow" class="w-4 h-4" /></a>
+      </div>
+    </section>
+  )}
+
+  <Contact />
+</BaseLayout>

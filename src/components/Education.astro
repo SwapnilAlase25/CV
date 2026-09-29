@@ -1,0 +1,34 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import { education, certifications, publications } from '../data/profile';
+---
+<section id="education" class="mx-auto max-w-6xl px-4 sm:px-6 py-24">
+  <SectionHeading label="05 · Learning" title="Education & credentials" />
+  <div class="grid md:grid-cols-3 gap-6">
+    <div class="reveal card p-6 sm:p-8 md:col-span-2">
+      <h3 class="font-mono text-xs uppercase tracking-widest text-muted">Education</h3>
+      <ul class="mt-5 space-y-6">
+        {education.map((e, i) => (
+          <li class="flex gap-4">
+            <span class={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${i === 0 ? 'bg-cyan ring-4 ring-cyan/20' : 'bg-amber/70'}`}></span>
+            <div>
+              <p class="font-display font-semibold text-lg">{e.degree}</p>
+              <p class="text-muted text-sm">{e.school}</p>
+              {e.note && <p class="mt-1 text-sm text-muted">{e.note}</p>}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div class="space-y-6">
+      <div class="reveal card p-6">
+        <h3 class="font-mono text-xs uppercase tracking-widest text-muted">Certifications</h3>
+        <ul class="mt-4 space-y-3 text-sm">{certifications.map((c) => <li class="flex gap-2"><span class="text-cyan">✓</span>{c}</li>)}</ul>
+      </div>
+      <div class="reveal card p-6">
+        <h3 class="font-mono text-xs uppercase tracking-widest text-muted">Publication</h3>
+        <ul class="mt-4 space-y-3 text-sm">{publications.map((p) => <li><p class="text-fg">{p.title}</p><p class="text-muted">{p.venue} · {p.year}</p></li>)}</ul>
+      </div>
+    </div>
+  </div>
+</section>

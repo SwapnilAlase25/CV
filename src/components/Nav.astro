@@ -1,0 +1,77 @@
+---
+import Icon from './Icon.astro';
+import { profile } from '../data/profile';
+import { url } from '../utils/url';
+
+const links = [
+  { href: url('/#about'), label: 'About' },
+  { href: url('/#experience'), label: 'Experience' },
+  { href: url('/projects'), label: 'Projects' },
+  { href: url('/blog'), label: 'Blog' },
+  { href: url('/resume'), label: 'Resume' },
+  { href: url('/#contact'), label: 'Contact' },
+];
+---
+<header id="site-nav" class="fixed top-0 inset-x-0 z-50 transition-all duration-300">
+  <nav class="mx-auto max-w-6xl px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a href={url('/')} class="flex items-center gap-2 group" aria-label="Home">
+      <span class="grid place-items-center w-9 h-9 rounded-lg font-display font-bold text-sm text-[#041018] bg-gradient-to-br from-amber via-cyan to-violet group-hover:rotate-6 transition-transform">{profile.initials}</span>
+      <span class="font-display font-semibold tracking-tight hidden sm:inline">{profile.name}</span>
+    </a>
+
+    <div class="hidden md:flex items-center gap-1">
+      {links.map((l) => (
+        <a href={l.href} class="px-3 py-2 rounded-lg text-sm text-muted hover:text-fg hover:bg-bg-soft transition-colors">{l.label}</a>
+      ))}
+      <button data-theme-toggle class="ml-2 p-2 rounded-lg text-muted hover:text-fg hover:bg-bg-soft" aria-label="Toggle colour theme">
+        <Icon name="sun" class="w-5 h-5 hidden dark:block" />
+        <Icon name="moon" class="w-5 h-5 dark:hidden" />
+      </button>
+    </div>
+
+    <div class="flex md:hidden items-center gap-1">
+      <button data-theme-toggle class="p-2 rounded-lg text-muted hover:text-fg" aria-label="Toggle colour theme">
+        <Icon name="sun" class="w-5 h-5 hidden dark:block" />
+        <Icon name="moon" class="w-5 h-5 dark:hidden" />
+      </button>
+      <button id="menu-btn" class="p-2 rounded-lg text-muted hover:text-fg" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+        <Icon name="menu" class="w-6 h-6" />
+      </button>
+    </div>
+  </nav>
+  <div id="mobile-menu" class="md:hidden hidden border-t border-line bg-bg/95 backdrop-blur-xl">
+    <div class="px-4 py-3 flex flex-col">
+      {links.map((l) => (
+        <a href={l.href} class="py-3 text-muted hover:text-fg border-b border-line/60 last:border-0">{l.label}</a>
+      ))}
+    </div>
+  </div>
+</header>
+
+<script>
+  const header = document.getElementById('site-nav')!;
+  const onScroll = () => {
+    const scrolled = window.scrollY > 10;
+    header.classList.toggle('bg-bg/80', scrolled);
+    header.classList.toggle('backdrop-blur-xl', scrolled);
+    header.classList.toggle('border-b', scrolled);
+    header.classList.toggle('border-line', scrolled);
+  };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  const btn = document.getElementById('menu-btn')!;
+  const menu = document.getElementById('mobile-menu')!;
+  btn.addEventListener('click', () => {
+    const open = menu.classList.toggle('hidden') === false;
+    btn.setAttribute('aria-expanded', String(open));
+  });
+  menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => menu.classList.add('hidden')));
+
+  document.querySelectorAll('[data-theme-toggle]').forEach((el) =>
+    el.addEventListener('click', () => {
+      const dark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch {}
+    })
+  );
+</script>

@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getProjects } from '../../utils/content';
+
+const projects = await getProjects();
+const groups = [
+  { key: 'ai', title: 'AI & Machine Learning', color: 'text-cyan' },
+  { key: 'embedded', title: 'Embedded & Automotive', color: 'text-amber' },
+  { key: 'foundation', title: 'Data foundations', color: 'text-violet' },
+] as const;
+---
+<BaseLayout title="Projects" description="AI, embedded and data projects by Swapnil Alase.">
+  <section class="mx-auto max-w-6xl px-4 sm:px-6 pt-32 pb-12">
+    <SectionHeading label="Projects" title="Everything I’ve built" subtitle="From Bluetooth stacks in production cars to machine learning experiments. The AI section grows as I ship." />
+    {groups.map((g) => {
+      const items = projects.filter((p) => p.data.category === g.key);
+      return items.length > 0 && (
+        <div class="mb-16">
+          <h2 class={`reveal font-mono text-xs uppercase tracking-widest mb-6 ${g.color}`}>{g.title}</h2>
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">{items.map((p) => <ProjectCard project={p} />)}</div>
+        </div>
+      );
+    })}
+  </section>
+</BaseLayout>

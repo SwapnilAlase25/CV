@@ -1,0 +1,25 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import { skills } from '../data/profile';
+---
+<section id="skills" class="mx-auto max-w-6xl px-4 sm:px-6 py-24">
+  <SectionHeading label="04 · Skills" title="Two worlds, one engineer" subtitle="AI and data skills on one side, embedded and automotive expertise on the other — and the place they meet." />
+  <div class="grid lg:grid-cols-[1fr_0.8fr_1fr] gap-6 items-stretch">
+    <div class="reveal card p-6 sm:p-8">
+      <h3 class="font-display font-semibold text-lg text-cyan">{skills.ai.title}</h3>
+      <div class="mt-5 flex flex-wrap gap-2">{skills.ai.items.map((s) => <span class="chip chip-ai">{s}</span>)}</div>
+    </div>
+    <div class="reveal card p-[1px] !border-0 bg-gradient-to-br from-amber/60 via-cyan/50 to-violet/60 lg:order-none order-last">
+      <div class="h-full rounded-[15px] bg-card p-6 sm:p-8 flex flex-col justify-center text-center">
+        <h3 class="font-display font-semibold text-lg text-gradient">{skills.bridge.title}</h3>
+        <ul class="mt-5 space-y-2.5 text-sm">
+          {skills.bridge.items.map((s) => <li class="text-fg">{s}</li>)}
+        </ul>
+      </div>
+    </div>
+    <div class="reveal card p-6 sm:p-8">
+      <h3 class="font-display font-semibold text-lg text-amber">{skills.embedded.title}</h3>
+      <div class="mt-5 flex flex-wrap gap-2">{skills.embedded.items.map((s) => <span class="chip chip-embedded">{s}</span>)}</div>
+    </div>
+  </div>
+</section>

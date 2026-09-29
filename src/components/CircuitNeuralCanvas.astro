@@ -1,0 +1,207 @@
+---
+/**
+ * Hero background: PCB circuit traces (embedded, amber) on the left flow into a
+ * glowing neural network (AI, cyan → violet) on the right. Signals travel along
+ * the traces and propagate through the network layers.
+ */
+---
+<canvas id="circuit-neural" class="absolute inset-0 w-full h-full" aria-hidden="true"></canvas>
+
+<script>
+  type Pt = { x: number; y: number };
+  type Node = Pt & { layer: number; flash: number };
+  type Pulse = { path: Pt[]; seg: number; t: number; speed: number; kind: 'trace' | 'edge'; to?: Node };
+
+  const canvas = document.getElementById('circuit-neural') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d')!;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let W = 0, H = 0, dpr = 1;
+  let nodes: Node[][] = [];
+  let traces: Pt[][] = [];
+  let pulses: Pulse[] = [];
+  let colors = { amber: '#f5a524', cyan: '#22d3ee', violet: '#a78bfa', dark: true };
+  let running = true;
+  let last = 0, spawnTimer = 0;
+
+  const rand = (a: number, b: number) => a + Math.random() * (b - a);
+
+  function readColors() {
+    const s = getComputedStyle(document.documentElement);
+    colors = {
+      amber: s.getPropertyValue('--amber').trim() || '#f5a524',
+      cyan: s.getPropertyValue('--cyan').trim() || '#22d3ee',
+      violet: s.getPropertyValue('--violet').trim() || '#a78bfa',
+      dark: document.documentElement.classList.contains('dark'),
+    };
+  }
+
+  function build() {
+    const rect = canvas.getBoundingClientRect();
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = rect.width; H = rect.height;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const mobile = W < 768;
+    const x0 = mobile ? 0.52 : 0.6, x1 = mobile ? 0.96 : 0.93;
+    const layerSizes = mobile ? [4, 5, 5, 3] : [6, 8, 8, 5];
+    const top = H * (mobile ? 0.55 : 0.16), bottom = H * (mobile ? 0.95 : 0.86);
+
+    nodes = layerSizes.map((n, li) => {
+      const x = W * (x0 + ((x1 - x0) * li) / (layerSizes.length - 1));
+      return Array.from({ length: n }, (_, i) => ({
+        x: x + rand(-8, 8),
+        y: top + ((bottom - top) * (i + 0.5)) / n + rand(-6, 6),
+        layer: li,
+        flash: 0,
+      }));
+    });
+
+    // Circuit traces: horizontal run → 45° diagonal → horizontal run into an input neuron
+    traces = nodes[0].map((target, i) => {
+      const y0 = mobile ? rand(top, bottom) : H * (0.1 + (0.8 * (i + rand(0.1, 0.9))) / nodes[0].length);
+      const dy = target.y - y0;
+      const tx = target.x - 14;
+      let bx = W * rand(mobile ? 0.12 : 0.25, mobile ? 0.3 : 0.45);
+      if (bx + Math.abs(dy) > tx - 10) bx = Math.max(10, tx - 10 - Math.abs(dy));
+      return [
+        { x: -10, y: y0 },
+        { x: bx, y: y0 },
+        { x: bx + Math.abs(dy), y: target.y },
+        { x: target.x, y: target.y },
+      ];
+    });
+    pulses = [];
+  }
+
+  function mix(a: string, b: string, t: number) {
+    // a, b are hex colours; returns rgb string
+    const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
+    const r = Math.round(((pa >> 16) & 255) * (1 - t) + ((pb >> 16) & 255) * t);
+    const g = Math.round(((pa >> 8) & 255) * (1 - t) + ((pb >> 8) & 255) * t);
+    const bl = Math.round((pa & 255) * (1 - t) + (pb & 255) * t);
+    return `rgb(${r},${g},${bl})`;
+  }
+
+  function spawnTracePulse() {
+    const i = Math.floor(Math.random() * traces.length);
+    pulses.push({ path: traces[i], seg: 0, t: 0, speed: rand(160, 260), kind: 'trace', to: nodes[0][i] });
+  }
+
+  function fire(node: Node) {
+    node.flash = 1;
+    const next = nodes[node.layer + 1];
+    if (!next) return;
+    const count = 1 + Math.floor(Math.random() * 2);
+    for (let k = 0; k < count; k++) {
+      const to = next[Math.floor(Math.random() * next.length)];
+      pulses.push({ path: [node, to], seg: 0, t: 0, speed: rand(180, 280), kind: 'edge', to });
+    }
+  }
+
+  function draw(dt: number) {
+    ctx.clearRect(0, 0, W, H);
+    const base = colors.dark ? 1 : 0.8;
+
+    // Neural edges
+    ctx.lineWidth = 1;
+    for (let l = 0; l < nodes.length - 1; l++) {
+      for (const a of nodes[l]) for (const b of nodes[l + 1]) {
+        ctx.strokeStyle = mix(colors.cyan, colors.violet, l / (nodes.length - 1));
+        ctx.globalAlpha = 0.07 * base;
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      }
+    }
+
+    // Circuit traces + vias
+    ctx.globalAlpha = 0.32 * base;
+    ctx.strokeStyle = colors.amber;
+    ctx.lineWidth = 1.4;
+    for (const tr of traces) {
+      ctx.beginPath();
+      ctx.moveTo(tr[0].x, tr[0].y);
+      for (let i = 1; i < tr.length; i++) ctx.lineTo(tr[i].x, tr[i].y);
+      ctx.stroke();
+      for (let i = 1; i < tr.length - 1; i++) {
+        ctx.beginPath(); ctx.arc(tr[i].x, tr[i].y, 2.6, 0, Math.PI * 2); ctx.stroke();
+      }
+    }
+
+    // Pulses
+    for (let p = pulses.length - 1; p >= 0; p--) {
+      const pu = pulses[p];
+      const a = pu.path[pu.seg], b = pu.path[pu.seg + 1];
+      const len = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+      pu.t += (pu.speed * dt) / len;
+      if (pu.t >= 1) {
+        pu.seg++; pu.t = 0;
+        if (pu.seg >= pu.path.length - 1) {
+          pulses.splice(p, 1);
+          if (pu.to) fire(pu.to);
+          continue;
+        }
+      }
+      const c = pu.path[pu.seg], d = pu.path[pu.seg + 1];
+      const x = c.x + (d.x - c.x) * pu.t, y = c.y + (d.y - c.y) * pu.t;
+      const col = pu.kind === 'trace' ? mix(colors.amber, colors.cyan, Math.max(0, Math.min(1, x / (W * 0.6)))) : mix(colors.cyan, colors.violet, x / W);
+      const g = ctx.createRadialGradient(x, y, 0, x, y, 10);
+      g.addColorStop(0, col); g.addColorStop(1, 'transparent');
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = col;
+      ctx.beginPath(); ctx.arc(x, y, 1.8, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Neurons
+    for (const layer of nodes) for (const n of layer) {
+      const col = mix(colors.cyan, colors.violet, n.layer / (nodes.length - 1));
+      n.flash = Math.max(0, n.flash - dt * 1.6);
+      if (n.flash > 0) {
+        const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, 22);
+        g.addColorStop(0, col); g.addColorStop(1, 'transparent');
+        ctx.globalAlpha = 0.55 * n.flash;
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(n.x, n.y, 22, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.globalAlpha = (0.45 + 0.55 * n.flash) * base;
+      ctx.fillStyle = colors.dark ? '#070b16' : '#f7f8fc';
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(n.x, n.y, 4.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function loop(ts: number) {
+    if (!running) return;
+    const dt = Math.min(0.05, (ts - last) / 1000 || 0.016);
+    last = ts;
+    spawnTimer -= dt;
+    if (spawnTimer <= 0 && pulses.length < 40) { spawnTracePulse(); spawnTimer = rand(0.25, 0.6); }
+    draw(dt);
+    requestAnimationFrame(loop);
+  }
+
+  function start() { if (!running) { running = true; last = performance.now(); requestAnimationFrame(loop); } }
+  function stop() { running = false; }
+
+  readColors();
+  build();
+  if (reduced) {
+    running = false;
+    draw(0);
+  } else {
+    requestAnimationFrame(loop);
+    new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop())).observe(canvas);
+    document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+  }
+
+  let rt: number | undefined;
+  window.addEventListener('resize', () => {
+    clearTimeout(rt);
+    rt = window.setTimeout(() => { build(); if (reduced) draw(0); }, 150);
+  });
+  new MutationObserver(() => { readColors(); if (reduced) draw(0); }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+</script>

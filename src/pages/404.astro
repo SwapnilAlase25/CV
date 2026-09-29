@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { url } from '../utils/url';
+---
+<BaseLayout title="Not found">
+  <section class="min-h-[70vh] grid place-items-center px-4 pt-24 text-center">
+    <div>
+      <p class="font-mono text-cyan">ERR 0x404 · signal lost</p>
+      <h1 class="mt-4 font-display font-bold text-5xl sm:text-7xl text-gradient">404</h1>
+      <p class="mt-4 text-muted">This trace doesn’t connect to any neuron.</p>
+      <a href={url('/')} class="btn btn-primary mt-8">Back home</a>
+    </div>
+  </section>
+</BaseLayout>

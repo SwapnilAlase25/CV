@@ -1,0 +1,46 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import Stats from './Stats.astro';
+import { profile } from '../data/profile';
+import { url } from '../utils/url';
+
+const kindStyle = {
+  embedded: { dot: 'bg-amber', text: 'text-amber', ring: 'ring-amber/30' },
+  ai: { dot: 'bg-cyan', text: 'text-cyan', ring: 'ring-cyan/30' },
+  next: { dot: 'bg-violet', text: 'text-violet', ring: 'ring-violet/30' },
+} as const;
+---
+<section id="about" class="mx-auto max-w-6xl px-4 sm:px-6 py-24">
+  <SectionHeading label="01 · About" title="From silicon to models" />
+
+  <div class="grid lg:grid-cols-[1fr_1.1fr] gap-12 items-start">
+    <div class="reveal space-y-5 text-muted leading-relaxed text-lg">
+      <div class="flex items-center gap-4 mb-2">
+        {profile.photo
+          ? <img src={url(`/${profile.photo}`)} alt={profile.name} width="88" height="88" class="w-22 h-22 rounded-2xl object-cover ring-2 ring-cyan/40" />
+          : <div class="w-20 h-20 rounded-2xl p-[2px] bg-gradient-to-br from-amber via-cyan to-violet"><div class="w-full h-full rounded-[14px] bg-card grid place-items-center font-display font-bold text-2xl text-gradient">{profile.initials}</div></div>}
+        <div>
+          <p class="font-display font-semibold text-fg text-xl">{profile.name}</p>
+          <p class="text-sm">{profile.role} · {profile.company}</p>
+        </div>
+      </div>
+      {profile.about.map((p) => <p>{p}</p>)}
+    </div>
+
+    <ol class="relative border-l border-line ml-3 space-y-8">
+      {profile.journey.map((j, i) => {
+        const k = kindStyle[j.kind];
+        return (
+          <li class="reveal pl-8 relative" style={`transition-delay:${i * 90}ms`}>
+            <span class={`absolute -left-[7px] top-1.5 w-3.5 h-3.5 rounded-full ${k.dot} ring-4 ${k.ring}`}></span>
+            <p class={`font-mono text-xs uppercase tracking-widest ${k.text}`}>{j.stage}</p>
+            <h3 class="mt-1 font-display font-semibold text-lg">{j.title}</h3>
+            <p class="mt-1 text-muted text-sm leading-relaxed">{j.text}</p>
+          </li>
+        );
+      })}
+    </ol>
+  </div>
+
+  <div class="mt-20"><Stats /></div>
+</section>
