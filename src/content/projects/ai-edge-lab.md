@@ -6,7 +6,15 @@ status: building
 tags: ["Python", "PyTorch", "TinyML", "Quantization", "Raspberry Pi"]
 metrics: ["In progress"]
 featured: true
+spotlight: true
+playground: true
 order: 1
+roadmap:
+  - { label: "Pick a sensor problem & collect data", status: active }
+  - { label: "Train a baseline model in Python", status: todo }
+  - { label: "Quantise & prune for the edge", status: todo }
+  - { label: "Deploy & benchmark on device", status: todo }
+  - { label: "Write it up on the blog", status: todo }
 ---
 
 ## Why this project

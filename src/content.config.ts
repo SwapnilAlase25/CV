@@ -20,6 +20,14 @@ const projects = defineCollection({
     /** Lower number = shown first */
     order: z.number().default(100),
     draft: z.boolean().default(false),
+    /** Show as the big highlighted card at the top of the projects section */
+    spotlight: z.boolean().default(false),
+    /** Embed the live neural-network playground */
+    playground: z.boolean().default(false),
+    /** Progress steps shown as a stepper: status = done | active | todo */
+    roadmap: z
+      .array(z.object({ label: z.string(), status: z.enum(['done', 'active', 'todo']).default('todo') }))
+      .default([]),
   }),
 });
 

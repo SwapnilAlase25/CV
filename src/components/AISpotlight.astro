@@ -1,0 +1,65 @@
+---
+import Icon from './Icon.astro';
+import NNPlayground from './NNPlayground.astro';
+import { url } from '../utils/url';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props { project: CollectionEntry<'projects'>; }
+const { project } = Astro.props;
+const d = project.data;
+const doneCount = d.roadmap.filter((r) => r.status === 'done').length;
+const progress = d.roadmap.length ? Math.round(((doneCount + 0.5 * d.roadmap.filter((r) => r.status === 'active').length) / d.roadmap.length) * 100) : 0;
+---
+<article class="reveal relative rounded-3xl p-[1.5px] bg-gradient-to-br from-cyan via-violet to-amber shadow-[0_20px_80px_-30px_var(--cyan)]">
+  <div class="relative rounded-[22px] bg-card overflow-hidden">
+    <div class="absolute inset-0 bg-grid opacity-50 pointer-events-none" aria-hidden="true"></div>
+    <div class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-cyan/10 blur-3xl pointer-events-none" aria-hidden="true"></div>
+    <div class="absolute -bottom-32 -right-24 w-96 h-96 rounded-full bg-violet/10 blur-3xl pointer-events-none" aria-hidden="true"></div>
+
+    <div class="relative grid lg:grid-cols-[1fr_1.05fr] gap-8 p-5 sm:p-8 lg:p-10">
+      <div class="flex flex-col">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="chip chip-ai">★ Spotlight · AI / ML</span>
+          {d.status === 'building' && <span class="chip chip-violet"><span class="w-1.5 h-1.5 rounded-full bg-violet animate-pulse"></span>Building in public</span>}
+        </div>
+        <h3 class="mt-4 font-display font-bold text-2xl sm:text-3xl leading-tight">
+          <a href={url(`/projects/${project.id}`)} class="hover:text-cyan transition-colors">{d.title}</a>
+        </h3>
+        <p class="mt-3 text-muted leading-relaxed">{d.summary}</p>
+
+        {d.roadmap.length > 0 && (
+          <div class="mt-6">
+            <div class="flex items-center justify-between font-mono text-xs text-muted">
+              <span class="uppercase tracking-widest">Roadmap</span><span>{progress}%</span>
+            </div>
+            <div class="mt-2 h-1.5 rounded-full bg-bg-soft overflow-hidden">
+              <div class="h-full rounded-full bg-gradient-to-r from-cyan to-violet" style={`width:${Math.max(progress, 4)}%`}></div>
+            </div>
+            <ol class="mt-4 relative space-y-3">
+              {d.roadmap.map((r, i) => (
+                <li class="flex items-center gap-3">
+                  <span class="relative grid place-items-center w-6 h-6 shrink-0">
+                    {r.status === 'active' && <span class="absolute inset-0 rounded-full bg-cyan/30 animate-ping"></span>}
+                    <span class={`relative grid place-items-center w-6 h-6 rounded-full font-mono text-[10px] ${r.status === 'done' ? 'bg-cyan text-bg' : r.status === 'active' ? 'bg-card border-2 border-cyan text-cyan' : 'border border-line text-muted'}`}>
+                      {r.status === 'done' ? '✓' : i + 1}
+                    </span>
+                  </span>
+                  <span class={`text-sm ${r.status === 'todo' ? 'text-muted' : 'text-fg'}`}>{r.label}</span>
+                  {r.status === 'active' && <span class="font-mono text-[10px] text-cyan whitespace-nowrap">← now</span>}
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
+
+        <div class="mt-6 flex flex-wrap gap-1.5">{d.tags.map((t) => <span class="chip">{t}</span>)}</div>
+        <div class="mt-6 flex flex-wrap gap-3 lg:mt-auto lg:pt-6">
+          <a href={url(`/projects/${project.id}`)} class="btn btn-primary">Follow the build <Icon name="arrow" class="w-4 h-4" /></a>
+          {d.github && <a href={d.github} target="_blank" rel="noopener" class="btn btn-ghost"><Icon name="github" class="w-4 h-4" /> Code</a>}
+        </div>
+      </div>
+
+      {d.playground && <NNPlayground />}
+    </div>
+  </div>
+</article>

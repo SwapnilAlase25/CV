@@ -1,17 +1,17 @@
 ---
-import CircuitNeuralCanvas from './CircuitNeuralCanvas.astro';
+import DetectionCanvas from './DetectionCanvas.astro';
 import Icon from './Icon.astro';
 import { profile } from '../data/profile';
 import { url } from '../utils/url';
 ---
 <section class="relative min-h-[100svh] flex items-center overflow-hidden">
   <div class="absolute inset-0 bg-grid" aria-hidden="true"></div>
-  <CircuitNeuralCanvas />
+  <DetectionCanvas />
   <div class="absolute inset-0 pointer-events-none bg-gradient-to-r from-bg via-bg/70 to-transparent md:via-bg/40" aria-hidden="true"></div>
   <div class="absolute inset-x-0 bottom-0 h-32 pointer-events-none bg-gradient-to-t from-bg to-transparent" aria-hidden="true"></div>
 
-  <div class="relative mx-auto max-w-6xl w-full px-4 sm:px-6 pt-28 pb-20">
-    <div class="max-w-2xl">
+  <div class="relative mx-auto max-w-6xl w-full px-4 sm:px-6 pt-28 pb-12">
+    <div class="max-w-2xl" data-hero-text>
       <p class="reveal inline-flex items-center gap-2 chip !text-xs !py-2 !px-3 mb-6">
         <span class="relative flex h-2 w-2">
           <span class="absolute inline-flex h-full w-full rounded-full bg-cyan opacity-75 animate-ping"></span>
@@ -50,7 +50,7 @@ import { url } from '../utils/url';
     </div>
   </div>
 
-  <a href="#about" class="no-print absolute bottom-8 left-1/2 -translate-x-1/2 text-muted hover:text-cyan animate-float hidden sm:block" aria-label="Scroll to about">
+  <a href="#about" class="no-print absolute bottom-8 left-1/2 -translate-x-1/2 text-muted hover:text-cyan animate-float hidden sm:[@media(min-height:760px)]:block" aria-label="Scroll to about">
     <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14m0 0-6-6m6 6 6-6"/></svg>
   </a>
 </section>

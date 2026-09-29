@@ -1,0 +1,327 @@
+---
+/**
+ * A real neural network (2 → 12 → 12 → 1, tanh, Adam) that trains live in the
+ * browser. Visitors add points and watch the decision boundary learn.
+ * Colours come from theme tokens, so it works in light and dark mode.
+ */
+---
+<div data-nn-playground class="rounded-2xl border border-line bg-bg-soft/60 p-4 sm:p-5">
+  <div class="flex items-center justify-between gap-2">
+    <p class="font-mono text-xs uppercase tracking-widest text-cyan">▶ Try it · neural net playground</p>
+    <span class="hidden sm:inline font-mono text-[11px] text-muted" data-nn="arch">2 → 12 → 12 → 1</span>
+  </div>
+
+  <div class="relative mt-3 mx-auto w-full max-w-[380px] aspect-square rounded-xl overflow-hidden border border-line bg-card touch-none">
+    <canvas data-nn="canvas" class="absolute inset-0 w-full h-full cursor-crosshair" aria-label="Neural network decision boundary. Click to add training points." role="img"></canvas>
+    <p data-nn="hint" class="pointer-events-none absolute inset-x-0 bottom-2 text-center font-mono text-[11px] text-muted"><span class="hidden sm:inline">click / drag to add points · shift = class B</span><span class="sm:hidden">tap / drag to add points</span></p>
+  </div>
+
+  <div class="mt-3 grid grid-cols-4 gap-2 text-center font-mono">
+    <div class="rounded-lg border border-line bg-card py-1.5"><p class="text-[10px] uppercase tracking-wider text-muted">epoch</p><p data-nn="epoch" class="text-sm text-fg">0</p></div>
+    <div class="rounded-lg border border-line bg-card py-1.5"><p class="text-[10px] uppercase tracking-wider text-muted">loss</p><p data-nn="loss" class="text-sm text-fg">–</p></div>
+    <div class="rounded-lg border border-line bg-card py-1.5"><p class="text-[10px] uppercase tracking-wider text-muted">accuracy</p><p data-nn="acc" class="text-sm text-cyan">–</p></div>
+    <div class="rounded-lg border border-line bg-card py-1.5"><p class="text-[10px] uppercase tracking-wider text-muted">points</p><p data-nn="count" class="text-sm text-fg">0</p></div>
+  </div>
+  <canvas data-nn="spark" class="mt-2 w-full h-8" aria-hidden="true"></canvas>
+
+  <div class="mt-3 flex flex-wrap items-center gap-2">
+    <div class="inline-flex rounded-lg border border-line p-0.5" role="group" aria-label="Class to add">
+      <button type="button" data-nn-class="0" aria-pressed="true" class="nn-btn nn-seg"><span class="w-2 h-2 rounded-full bg-amber"></span>Class A</button>
+      <button type="button" data-nn-class="1" aria-pressed="false" class="nn-btn nn-seg"><span class="w-2 h-2 rounded-full bg-cyan"></span>Class B</button>
+    </div>
+    <div class="flex flex-wrap gap-1.5" role="group" aria-label="Datasets">
+      <button type="button" data-nn-preset="circle" class="nn-btn">Circle</button>
+      <button type="button" data-nn-preset="xor" class="nn-btn">XOR</button>
+      <button type="button" data-nn-preset="spiral" class="nn-btn">Spiral</button>
+      <button type="button" data-nn-preset="clear" class="nn-btn">Clear</button>
+    </div>
+    <div class="flex gap-1.5 ml-auto">
+      <button type="button" data-nn="reset" class="nn-btn" title="Re-initialise weights">↺ Reset</button>
+      <button type="button" data-nn="play" class="nn-btn nn-primary" aria-pressed="true">❚❚ Pause</button>
+    </div>
+  </div>
+  <p class="mt-3 text-xs text-muted leading-relaxed">A real neural network training live in your browser — no libraries, just math. Add points and watch it learn.</p>
+</div>
+
+<style>
+  .nn-btn {
+    display: inline-flex; align-items: center; gap: .35rem;
+    font-family: var(--font-mono); font-size: .72rem; line-height: 1;
+    padding: .45rem .6rem; border-radius: .5rem;
+    border: 1px solid var(--border); color: var(--muted); background: var(--card);
+    transition: color .15s, border-color .15s, background .15s;
+  }
+  .nn-btn:hover { color: var(--fg); border-color: var(--cyan); }
+  .nn-seg { border-color: transparent; background: transparent; }
+  .nn-seg[aria-pressed='true'] { background: var(--bg-soft); color: var(--fg); border-color: var(--border); }
+  .nn-primary { color: var(--cyan); border-color: color-mix(in srgb, var(--cyan) 40%, var(--border)); }
+</style>
+
+<script>
+  type Pt = { x: number; y: number; c: 0 | 1 };
+
+  /* ───────────── Tiny MLP with Adam ───────────── */
+  class MLP {
+    sizes: number[];
+    W: Float64Array[] = []; B: Float64Array[] = [];
+    mW: Float64Array[] = []; vW: Float64Array[] = []; mB: Float64Array[] = []; vB: Float64Array[] = [];
+    t = 0;
+    constructor(sizes: number[]) { this.sizes = sizes; this.init(); }
+    init() {
+      this.W = []; this.B = []; this.mW = []; this.vW = []; this.mB = []; this.vB = []; this.t = 0;
+      for (let l = 0; l < this.sizes.length - 1; l++) {
+        const nin = this.sizes[l], nout = this.sizes[l + 1];
+        const w = new Float64Array(nin * nout);
+        const scale = Math.sqrt(1 / nin) * 1.6;
+        for (let i = 0; i < w.length; i++) w[i] = (Math.random() * 2 - 1) * scale;
+        this.W.push(w); this.B.push(new Float64Array(nout));
+        this.mW.push(new Float64Array(w.length)); this.vW.push(new Float64Array(w.length));
+        this.mB.push(new Float64Array(nout)); this.vB.push(new Float64Array(nout));
+      }
+    }
+    /** Returns activations of every layer; last layer is the sigmoid probability. */
+    forward(x: number, y: number): Float64Array[] {
+      const acts: Float64Array[] = [Float64Array.from([x, y])];
+      for (let l = 0; l < this.W.length; l++) {
+        const a = acts[l], nin = this.sizes[l], nout = this.sizes[l + 1];
+        const z = new Float64Array(nout);
+        for (let j = 0; j < nout; j++) {
+          let s = this.B[l][j];
+          for (let i = 0; i < nin; i++) s += a[i] * this.W[l][i * nout + j];
+          z[j] = l === this.W.length - 1 ? 1 / (1 + Math.exp(-s)) : Math.tanh(s);
+        }
+        acts.push(z);
+      }
+      return acts;
+    }
+    predict(x: number, y: number) { const a = this.forward(x, y); return a[a.length - 1][0]; }
+    /** One full-batch Adam step with binary cross-entropy. Returns loss. */
+    step(data: Pt[], lr = 0.03) {
+      if (!data.length) return 0;
+      const L = this.W.length;
+      const gW = this.W.map((w) => new Float64Array(w.length));
+      const gB = this.B.map((b) => new Float64Array(b.length));
+      let loss = 0;
+      for (const p of data) {
+        const acts = this.forward(p.x, p.y);
+        const out = acts[L][0];
+        loss += -(p.c * Math.log(out + 1e-9) + (1 - p.c) * Math.log(1 - out + 1e-9));
+        let delta = Float64Array.from([out - p.c]); // dL/dz for sigmoid + BCE
+        for (let l = L - 1; l >= 0; l--) {
+          const a = acts[l], nin = this.sizes[l], nout = this.sizes[l + 1];
+          for (let j = 0; j < nout; j++) {
+            gB[l][j] += delta[j];
+            for (let i = 0; i < nin; i++) gW[l][i * nout + j] += a[i] * delta[j];
+          }
+          if (l > 0) {
+            const prev = new Float64Array(nin);
+            for (let i = 0; i < nin; i++) {
+              let s = 0;
+              for (let j = 0; j < nout; j++) s += this.W[l][i * nout + j] * delta[j];
+              prev[i] = s * (1 - a[i] * a[i]); // tanh'
+            }
+            delta = prev;
+          }
+        }
+      }
+      const n = data.length, b1 = 0.9, b2 = 0.999, eps = 1e-8;
+      this.t++;
+      const c1 = 1 - Math.pow(b1, this.t), c2 = 1 - Math.pow(b2, this.t);
+      const upd = (p: Float64Array, g: Float64Array, m: Float64Array, v: Float64Array) => {
+        for (let i = 0; i < p.length; i++) {
+          const gi = g[i] / n;
+          m[i] = b1 * m[i] + (1 - b1) * gi;
+          v[i] = b2 * v[i] + (1 - b2) * gi * gi;
+          p[i] -= (lr * (m[i] / c1)) / (Math.sqrt(v[i] / c2) + eps);
+        }
+      };
+      for (let l = 0; l < L; l++) { upd(this.W[l], gW[l], this.mW[l], this.vW[l]); upd(this.B[l], gB[l], this.mB[l], this.vB[l]); }
+      return loss / n;
+    }
+  }
+
+  /* ───────────── Datasets (coordinates in [-1, 1]) ───────────── */
+  const gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) * 0.6;
+  function dataset(name: string): Pt[] {
+    const pts: Pt[] = [];
+    if (name === 'circle') {
+      for (let i = 0; i < 90; i++) {
+        const a = Math.random() * Math.PI * 2, r = Math.random() * 0.4;
+        pts.push({ x: r * Math.cos(a), y: r * Math.sin(a), c: 0 });
+        const r2 = 0.62 + Math.random() * 0.28;
+        pts.push({ x: r2 * Math.cos(a + 1), y: r2 * Math.sin(a + 1), c: 1 });
+      }
+    } else if (name === 'xor') {
+      for (let i = 0; i < 180; i++) {
+        let x = Math.random() * 1.8 - 0.9, y = Math.random() * 1.8 - 0.9;
+        x += x > 0 ? 0.06 : -0.06; y += y > 0 ? 0.06 : -0.06;
+        pts.push({ x, y, c: x * y > 0 ? 0 : 1 });
+      }
+    } else if (name === 'spiral') {
+      for (let i = 0; i < 100; i++) {
+        const r = (i / 100) * 0.85 + 0.05, t = (i / 100) * 2.6 * Math.PI;
+        for (const c of [0, 1] as const) {
+          const a = t + c * Math.PI;
+          pts.push({ x: r * Math.cos(a) + gauss() * 0.04, y: r * Math.sin(a) + gauss() * 0.04, c });
+        }
+      }
+    }
+    return pts;
+  }
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    const n = parseInt(h.length === 3 ? h.split('').map((c) => c + c).join('') : h, 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+
+  function setup(root: HTMLElement) {
+    const $ = <T extends HTMLElement>(sel: string) => root.querySelector(sel) as T;
+    const canvas = $<HTMLCanvasElement>('[data-nn="canvas"]');
+    const spark = $<HTMLCanvasElement>('[data-nn="spark"]');
+    const ctx = canvas.getContext('2d')!, sctx = spark.getContext('2d')!;
+    const out = { epoch: $('[data-nn="epoch"]'), loss: $('[data-nn="loss"]'), acc: $('[data-nn="acc"]'), count: $('[data-nn="count"]') };
+    const playBtn = $<HTMLButtonElement>('[data-nn="play"]');
+    const hint = $('[data-nn="hint"]');
+
+    const net = new MLP([2, 12, 12, 1]);
+    let data: Pt[] = dataset('circle');
+    let cls: 0 | 1 = 0;
+    let playing = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let visible = false, losses: number[] = [], epoch = 0, lastLoss = 0, raf = 0;
+    const G = 64;
+    const off = document.createElement('canvas'); off.width = G; off.height = G;
+    const octx = off.getContext('2d')!;
+    const img = octx.createImageData(G, G);
+    let col = { a: [245, 165, 36], b: [34, 211, 238], bg: '#070b16', amber: '#f5a524', cyan: '#22d3ee', muted: '#8d99b8', line: '#1d2742' };
+
+    function readColors() {
+      const s = getComputedStyle(document.documentElement);
+      const v = (n: string, d: string) => s.getPropertyValue(n).trim() || d;
+      const amber = v('--amber', '#f5a524'), cyan = v('--cyan', '#22d3ee');
+      col = { a: hexToRgb(amber), b: hexToRgb(cyan), bg: v('--card', '#0f1629'), amber, cyan, muted: v('--muted', '#8d99b8'), line: v('--border', '#1d2742') };
+    }
+
+    let S = 0;
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      S = canvas.getBoundingClientRect().width;
+      canvas.width = S * dpr; canvas.height = S * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const sw = spark.getBoundingClientRect().width;
+      spark.width = sw * dpr; spark.height = 32 * dpr;
+      sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    const toPx = (v: number) => ((v + 1) / 2) * S;
+    const toData = (px: number) => (px / S) * 2 - 1;
+
+    function render() {
+      // Decision boundary heatmap
+      for (let j = 0; j < G; j++) for (let i = 0; i < G; i++) {
+        const p = net.predict((i + 0.5) / G * 2 - 1, 1 - (j + 0.5) / G * 2);
+        const k = (j * G + i) * 4;
+        const c = p < 0.5 ? col.a : col.b;
+        img.data[k] = c[0]; img.data[k + 1] = c[1]; img.data[k + 2] = c[2];
+        img.data[k + 3] = Math.round(255 * (0.05 + 0.33 * Math.abs(p - 0.5) * 2));
+      }
+      octx.putImageData(img, 0, 0);
+      ctx.clearRect(0, 0, S, S);
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(off, 0, 0, S, S);
+
+      // axes
+      ctx.strokeStyle = col.line; ctx.lineWidth = 1; ctx.globalAlpha = 0.8;
+      ctx.beginPath(); ctx.moveTo(S / 2, 0); ctx.lineTo(S / 2, S); ctx.moveTo(0, S / 2); ctx.lineTo(S, S / 2); ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      // points
+      for (const p of data) {
+        ctx.beginPath();
+        ctx.arc(toPx(p.x), toPx(-p.y), 4.2, 0, Math.PI * 2);
+        ctx.fillStyle = p.c === 0 ? col.amber : col.cyan;
+        ctx.fill();
+        ctx.lineWidth = 1.5; ctx.strokeStyle = col.bg; ctx.stroke();
+      }
+
+      // loss sparkline
+      const sw = spark.getBoundingClientRect().width;
+      sctx.clearRect(0, 0, sw, 32);
+      if (losses.length > 1) {
+        const max = Math.max(...losses, 0.01);
+        sctx.beginPath();
+        losses.forEach((l, i) => {
+          const x = (i / (losses.length - 1)) * sw, y = 30 - (l / max) * 26;
+          i ? sctx.lineTo(x, y) : sctx.moveTo(x, y);
+        });
+        sctx.strokeStyle = col.cyan; sctx.lineWidth = 1.5; sctx.stroke();
+        sctx.fillStyle = col.muted; sctx.font = '10px "JetBrains Mono", monospace';
+        sctx.fillText('loss', sw - 26, 10);
+      }
+
+      // stats
+      let correct = 0;
+      for (const p of data) if ((net.predict(p.x, p.y) >= 0.5 ? 1 : 0) === p.c) correct++;
+      out.epoch.textContent = String(epoch);
+      out.loss.textContent = data.length ? lastLoss.toFixed(3) : '–';
+      out.acc.textContent = data.length ? `${Math.round((correct / data.length) * 100)}%` : '–';
+      out.count.textContent = String(data.length);
+    }
+
+    function loop() {
+      raf = 0;
+      if (!playing || !visible) return;
+      if (data.length) {
+        for (let k = 0; k < 6; k++) { lastLoss = net.step(data); epoch++; }
+        if (epoch % 12 === 0) { losses.push(lastLoss); if (losses.length > 120) losses.shift(); }
+      }
+      render();
+      raf = requestAnimationFrame(loop);
+    }
+    const kick = () => { if (!raf && playing && visible) raf = requestAnimationFrame(loop); };
+
+    function setPlaying(p: boolean) {
+      playing = p;
+      playBtn.setAttribute('aria-pressed', String(p));
+      playBtn.textContent = p ? '❚❚ Pause' : '▶ Train';
+      if (p) kick(); else render();
+    }
+    function resetNet() { net.init(); epoch = 0; losses = []; lastLoss = 0; render(); kick(); }
+
+    // ── interaction
+    let lastAdd = 0;
+    function addAt(e: PointerEvent) {
+      const r = canvas.getBoundingClientRect();
+      const x = toData(e.clientX - r.left), y = -toData(e.clientY - r.top);
+      if (Math.abs(x) > 1 || Math.abs(y) > 1) return;
+      data.push({ x, y, c: e.shiftKey ? 1 : cls });
+      hint.style.opacity = '0';
+      if (!playing) render(); else kick();
+    }
+    canvas.addEventListener('pointerdown', (e) => { canvas.setPointerCapture(e.pointerId); addAt(e); lastAdd = performance.now(); });
+    canvas.addEventListener('pointermove', (e) => {
+      if (!e.buttons) return;
+      const now = performance.now();
+      if (now - lastAdd > 40) { addAt(e); lastAdd = now; }
+    });
+
+    root.querySelectorAll<HTMLButtonElement>('[data-nn-class]').forEach((b) =>
+      b.addEventListener('click', () => {
+        cls = Number(b.dataset.nnClass) as 0 | 1;
+        root.querySelectorAll('[data-nn-class]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      })
+    );
+    root.querySelectorAll<HTMLButtonElement>('[data-nn-preset]').forEach((b) =>
+      b.addEventListener('click', () => { data = dataset(b.dataset.nnPreset!); resetNet(); })
+    );
+    $('[data-nn="reset"]').addEventListener('click', resetNet);
+    playBtn.addEventListener('click', () => setPlaying(!playing));
+
+    readColors(); resize(); setPlaying(playing); render();
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; kick(); }).observe(root);
+    new MutationObserver(() => { readColors(); render(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    new ResizeObserver(() => { resize(); render(); }).observe(canvas);
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-nn-playground]').forEach(setup);
+</script>

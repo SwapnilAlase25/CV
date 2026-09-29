@@ -15,7 +15,7 @@ export const profile = {
   location: 'Pune, India',
 
   /** Big hero headline + the rotating words under it. */
-  headline: 'Building intelligent systems — from silicon to models.',
+  headline: 'Engineering AI that works in the real world.',
   rotating: [
     'Machine Learning',
     'Data-driven products',

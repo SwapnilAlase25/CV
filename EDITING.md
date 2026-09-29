@@ -53,6 +53,12 @@ demo: "https://your-demo-link"        # optional, delete the line if none
 featured: true          # true = shown on the home page (top 3 by order)
 order: 1                # smaller = shown first
 draft: false            # true = hidden
+spotlight: false        # true = the big highlighted card at the top of Projects (use for ONE project)
+playground: false       # true = embed the live neural-network playground
+roadmap:                # optional progress stepper; status = done | active | todo
+  - { label: "Collect data", status: done }
+  - { label: "Train model", status: active }
+  - { label: "Deploy on device", status: todo }
 ---
 
 ## Problem
@@ -87,5 +93,11 @@ print("code blocks get syntax highlighting")
 ```
 The newest 3 posts automatically appear on the home page and in the RSS feed.
 
-## 6. Change colours
+## 6. The spotlight AI project
+The big card with the live neural-network playground comes from `src/content/projects/ai-edge-lab.md`
+(`spotlight: true`, `playground: true`). As you make progress, update its `roadmap` statuses
+(`todo` → `active` → `done`); the progress bar updates automatically.
+When your first real AI project is ready, set `spotlight: true` on that project and `false` (or `draft: true`) on this placeholder.
+
+## 7. Change colours
 Edit the tokens at the top of `src/styles/global.css` (`--amber`, `--cyan`, `--violet`, backgrounds).

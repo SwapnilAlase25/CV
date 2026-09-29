@@ -5,6 +5,7 @@ import About from '../components/About.astro';
 import Experience from '../components/Experience.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import AISpotlight from '../components/AISpotlight.astro';
 import Skills from '../components/Skills.astro';
 import Education from '../components/Education.astro';
 import BlogCard from '../components/BlogCard.astro';
@@ -13,7 +14,9 @@ import Icon from '../components/Icon.astro';
 import { getPosts, getProjects } from '../utils/content';
 import { url } from '../utils/url';
 
-const featured = (await getProjects()).filter((p) => p.data.featured).slice(0, 3);
+const projects = await getProjects();
+const spotlight = projects.find((p) => p.data.spotlight);
+const featured = projects.filter((p) => p.data.featured && p !== spotlight).slice(0, 3);
 const posts = (await getPosts()).slice(0, 3);
 ---
 <BaseLayout>
@@ -21,8 +24,9 @@ const posts = (await getPosts()).slice(0, 3);
   <About />
   <Experience />
 
-  <section id="projects" class="mx-auto max-w-6xl px-4 sm:px-6 py-24">
+  <section id="projects" class="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-16">
     <SectionHeading label="03 · Projects" title="Things I’ve built" subtitle="AI projects in progress, production embedded work, and data foundations. New projects land here as I ship them." />
+    {spotlight && <div class="mb-6"><AISpotlight project={spotlight} /></div>}
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       {featured.map((p) => <ProjectCard project={p} />)}
     </div>
@@ -35,7 +39,7 @@ const posts = (await getPosts()).slice(0, 3);
   <Education />
 
   {posts.length > 0 && (
-    <section id="writing" class="mx-auto max-w-6xl px-4 sm:px-6 py-24">
+    <section id="writing" class="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-16">
       <SectionHeading label="Writing" title="Latest from the blog" subtitle="Notes on AI, edge intelligence and the journey from embedded to ML." />
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {posts.map((p) => <BlogCard post={p} />)}

@@ -5,7 +5,7 @@ category: embedded
 status: archived
 tags: ["PIC", "Raspberry Pi", "Modbus", "I²C", "UART", "IoT"]
 metrics: ["IRJET publication"]
-featured: false
+featured: true
 order: 40
 ---
 

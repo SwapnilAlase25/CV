@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
+import NNPlayground from '../../components/NNPlayground.astro';
 import { render } from 'astro:content';
 import { getProjects } from '../../utils/content';
 import { url } from '../../utils/url';
@@ -35,6 +36,18 @@ const cat = { ai: ['AI / ML', 'chip-ai'], embedded: ['Embedded', 'chip-embedded'
         {d.demo && <a href={d.demo} target="_blank" rel="noopener" class="btn btn-primary"><Icon name="external" class="w-4 h-4" /> Live demo</a>}
       </div>
     )}
+    {d.roadmap.length > 0 && (
+      <ol class="mt-8 card p-5 space-y-2.5">
+        {d.roadmap.map((r, i) => (
+          <li class="flex items-center gap-3 text-sm">
+            <span class={`grid place-items-center w-6 h-6 rounded-full font-mono text-[10px] ${r.status === 'done' ? 'bg-cyan text-bg' : r.status === 'active' ? 'border-2 border-cyan text-cyan' : 'border border-line text-muted'}`}>{r.status === 'done' ? '✓' : i + 1}</span>
+            <span class={r.status === 'todo' ? 'text-muted' : 'text-fg'}>{r.label}</span>
+            {r.status === 'active' && <span class="font-mono text-[10px] text-cyan">← now</span>}
+          </li>
+        ))}
+      </ol>
+    )}
+    {d.playground && <div class="mt-8"><NNPlayground /></div>}
     <hr class="my-10 border-line" />
     <div class="prose prose-site max-w-none">
       <Content />

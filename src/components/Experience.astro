@@ -5,11 +5,11 @@ import { experience } from '../data/profile';
 const ai = experience.filter((j) => j.track === 'ai');
 const embedded = experience.filter((j) => j.track === 'embedded');
 ---
-<section id="experience" class="mx-auto max-w-6xl px-4 sm:px-6 py-24">
+<section id="experience" class="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-16">
   <SectionHeading label="02 · Experience" title="Where I’ve worked" subtitle="AI today, built on a foundation of production automotive engineering." />
 
   {ai.map((job) => (
-    <article class="reveal card p-[1px] !border-0 bg-gradient-to-br from-cyan/60 via-violet/40 to-transparent mb-10">
+    <article class="reveal card p-[1px] !border-0 bg-gradient-to-br from-cyan/60 via-violet/40 to-transparent mb-8">
       <div class="rounded-[15px] bg-card p-6 sm:p-10">
         <div class="flex flex-wrap items-center gap-3">
           <span class="chip chip-ai">AI · current</span>
