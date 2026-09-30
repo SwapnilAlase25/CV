@@ -20,7 +20,7 @@ const jsonLd = {
   email: `mailto:${profile.email}`,
   url: new URL(url('/'), Astro.site).href,
   sameAs: [profile.socials.linkedin, profile.socials.github],
-  knowsAbout: ['Artificial Intelligence', 'Machine Learning', 'Data Analytics', 'Edge AI', 'Embedded Systems', 'Automotive Software'],
+  knowsAbout: ['Artificial Intelligence', 'Machine Learning', 'Data Analytics', 'Generative AI', 'Embedded Systems', 'Automotive Software'],
 };
 ---
 <!doctype html>
@@ -32,7 +32,6 @@ const jsonLd = {
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
-    <link rel="alternate" type="application/rss+xml" title={`${profile.name} — Blog`} href={url('/rss.xml')} />
     <meta name="theme-color" content="#070b16" />
 
     <meta property="og:type" content={type} />
@@ -49,16 +48,7 @@ const jsonLd = {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
 
-    <script is:inline>
-      (function () {
-        var d = document.documentElement;
-        d.classList.add('js');
-        var t = null;
-        try { t = localStorage.getItem('theme'); } catch (e) {}
-        if (t === 'light') d.classList.remove('dark');
-        else if (!t && window.matchMedia('(prefers-color-scheme: light)').matches) d.classList.remove('dark');
-      })();
-    </script>
+    <script is:inline>document.documentElement.classList.add('js');</script>
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
   <body class="min-h-screen font-sans">

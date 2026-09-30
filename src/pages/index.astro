@@ -40,7 +40,7 @@ const posts = (await getPosts()).slice(0, 3);
 
   {posts.length > 0 && (
     <section id="writing" class="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-16">
-      <SectionHeading label="Writing" title="Latest from the blog" subtitle="Notes on AI, edge intelligence and the journey from embedded to ML." />
+      <SectionHeading label="Writing" title="Latest from the blog" subtitle="Notes on Generative AI, machine learning and the journey from embedded to AI." />
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {posts.map((p) => <BlogCard post={p} />)}
       </div>

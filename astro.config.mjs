@@ -4,12 +4,8 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
-// ─── Hosting ────────────────────────────────────────────────────────────────
-// GitHub Pages project site:  https://swapnilalase25.github.io/CV/
-//   site: 'https://swapnilalase25.github.io', base: '/CV'
-// Custom domain (after buying it and adding public/CNAME):
-//   site: 'https://swapnilalase.cv',          base: '/'
-// ────────────────────────────────────────────────────────────────────────────
+// Hosted on GitHub Pages with the custom domain https://swapnilalase.tech
+// (see public/CNAME). The site is served from the domain root, so no `base` is needed.
 export default defineConfig({
   site: 'https://swapnilalase.tech',
   trailingSlash: 'ignore',

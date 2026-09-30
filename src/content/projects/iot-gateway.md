@@ -14,4 +14,4 @@ order: 40
 Early-career work: an internship at Axonet Emsys building industrial IoT gateways, and a published paper
 (IRJET, 2017) on a Raspberry Pi based digital signage board.
 
-These projects taught me how data is born on devices — the same data that edge AI systems learn from today.
+These projects taught me how data is born on devices — the kind of data machine-learning systems learn from today.

@@ -5,7 +5,7 @@ import BlogCard from '../../components/BlogCard.astro';
 import { getPosts } from '../../utils/content';
 const posts = await getPosts();
 ---
-<BaseLayout title="Blog" description="Writing on AI, machine learning, Edge AI and the journey from embedded systems.">
+<BaseLayout title="Blog" description="Writing on Generative AI, machine learning and the journey from embedded systems to AI.">
   <section class="mx-auto max-w-6xl px-4 sm:px-6 pt-32 pb-12">
     <SectionHeading label="Blog" title="Notes from the journey" subtitle="What I’m building, learning and breaking on the way from embedded systems to AI." />
     {posts.length === 0

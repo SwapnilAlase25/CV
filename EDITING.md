@@ -12,7 +12,7 @@ Edit **`src/data/profile.ts`**. It is organised in blocks:
 |---|---|
 | Name, role, headline, rotating words, summary | `profile` at the top |
 | About paragraphs | `profile.about` |
-| Email / phone / show-hide phone | `profile.email`, `profile.phone`, `profile.showPhone` |
+| Email | `profile.email` |
 | Stats strip (3+ years in AI…) | `profile.stats` |
 | Journey timeline | `profile.journey` |
 | Jobs | `experience` |
@@ -42,12 +42,12 @@ Create a file `src/content/projects/my-project-name.md` (*Add file → Create ne
 
 ```markdown
 ---
-title: "Driver Drowsiness Detection on Raspberry Pi"
+title: "Customer Support Chatbot with RAG"
 summary: "One or two sentences recruiters will read: problem, approach, result."
 category: ai            # ai | embedded | foundation
 status: live            # live | building | archived
-tags: ["Python", "PyTorch", "OpenCV"]
-metrics: ["94% accuracy", "18 ms / frame"]
+tags: ["Python", "LLMs", "RAG"]
+metrics: ["your key number", "another result"]
 github: "https://github.com/swapnilalase25/your-repo"
 demo: "https://your-demo-link"        # optional, delete the line if none
 featured: true          # true = shown on the home page (top 3 by order)
@@ -70,8 +70,7 @@ roadmap:                # optional progress stepper; status = done | active | to
 ## Results
 ...
 ```
-Tip: to put an image in a project/post, upload it to `public/images/` and write `![Alt text](/CV/images/file.png)`.
-(After moving to the custom domain, use `/images/file.png`.)
+Tip: to put an image in a project/post, upload it to `public/images/` and write `![Alt text](/images/file.png)`.
 
 ## 5. Write a blog post
 Create `src/content/blog/my-post-title.md`:
@@ -81,7 +80,7 @@ Create `src/content/blog/my-post-title.md`:
 title: "What I learned deploying a model on a microcontroller"
 description: "One-line teaser shown on cards and in link previews."
 date: 2026-10-15
-tags: ["edge-ai", "tinyml"]
+tags: ["genai", "llm"]
 draft: false
 ---
 
@@ -91,10 +90,10 @@ Your text in **Markdown**. Use `## Headings` (they build the table of contents).
 print("code blocks get syntax highlighting")
 ```
 ```
-The newest 3 posts automatically appear on the home page and in the RSS feed.
+The newest 3 posts automatically appear on the home page.
 
 ## 6. The spotlight AI project
-The big card with the live neural-network playground comes from `src/content/projects/ai-edge-lab.md`
+The big card with the live neural-network playground comes from `src/content/projects/ai-lab.md`
 (`spotlight: true`, `playground: true`). As you make progress, update its `roadmap` statuses
 (`todo` → `active` → `done`); the progress bar updates automatically.
 When your first real AI project is ready, set `spotlight: true` on that project and `false` (or `draft: true`) on this placeholder.

@@ -19,7 +19,7 @@ export const profile = {
   rotating: [
     'Machine Learning',
     'Data-driven products',
-    'Edge AI',
+    'Generative AI',
     'Automotive intelligence',
     'Python · SQL · Statistics',
   ],
@@ -32,13 +32,10 @@ export const profile = {
   about: [
     'I started my career close to the metal — writing Embedded C, bringing up Bluetooth links between car radios and phones, and hardening infotainment systems for OEMs like Volvo, Renault, Mack Trucks and Stellantis.',
     'Along the way I realised the most interesting problems were no longer just about moving bytes reliably, but about making systems that learn. So I moved into Forvia’s AI team and began an MS in Artificial Intelligence & Machine Learning (Scaler Neovarsity · Woolf University).',
-    'Today I work on AI while keeping the engineering discipline that embedded taught me: measure everything, respect constraints, and ship things that work in the real world. My north star is AI that runs where the data is born — on the edge.',
+    'Today I work on AI while keeping the engineering discipline that embedded taught me: measure everything, respect constraints, and ship things that work in the real world. My focus now is Generative AI and machine learning: building AI systems that are reliable, measurable and useful in the real world.',
   ],
 
-  /** Toggle the phone number on/off here. */
-  showPhone: true,
   email: 'swapnilalase07@gmail.com',
-  phone: '+91 96895 47060',
 
   socials: {
     linkedin: 'https://www.linkedin.com/in/swapnilalase/',
@@ -69,7 +66,7 @@ export const profile = {
     { stage: 'Specialise', title: 'Embedded Systems Design', text: 'PG-Diploma at CDAC Pune — microcontrollers, RTOS, communication protocols.', kind: 'embedded' },
     { stage: 'Ship', title: 'Automotive Embedded @ Forvia', text: 'Infotainment and Bluetooth software for global OEMs; led a small team on secure phone-to-radio communication.', kind: 'embedded' },
     { stage: 'Transform', title: 'AI Team @ Forvia + MS in AI & ML', text: 'Internal move into AI. Machine learning, statistics and data analysis applied to automotive products.', kind: 'ai' },
-    { stage: 'Next', title: 'Edge AI', text: 'Intelligence that runs on the device — where embedded and AI finally meet.', kind: 'next' },
+    { stage: 'Next', title: 'Generative AI', text: 'Focused on Generative AI and machine learning, bringing embedded-grade engineering discipline to AI systems.', kind: 'next' },
   ],
 } as const;
 
@@ -103,7 +100,7 @@ export const experience: Job[] = [
         // e.g. 'Built a Python pipeline that classifies X from vehicle logs, cutting triage time by 40%.'
         points: [
           'Applying machine learning and statistical analysis to automotive and infotainment data.',
-          'Bridging AI models with embedded platforms, bringing hands-on knowledge of in-vehicle systems to the AI team.',
+          'Bringing production-engineering discipline from automotive software to AI development.',
         ],
       },
     ],
@@ -158,11 +155,12 @@ export const experience: Job[] = [
 export const skills = {
   ai: {
     title: 'AI · ML · Data',
+    // TODO (Swapnil): add the Generative AI tools/frameworks you actually use (only real ones).
     items: ['Python', 'SQL', 'NumPy', 'Pandas', 'Scikit-learn', 'Matplotlib', 'Seaborn', 'Jupyter', 'Statistics', 'Hypothesis Testing', 'EDA', 'Data Visualization', 'Generative AI'],
   },
   bridge: {
-    title: 'Edge AI — where they meet',
-    items: ['On-device intelligence', 'Sensor & vehicle data', 'Resource-aware ML', 'Reliability engineering', 'Secure data pipelines'],
+    title: 'Engineering foundations',
+    items: ['Reliability engineering', 'Working within constraints', 'Measure everything', 'Secure by design', 'Cross-team delivery'],
   },
   embedded: {
     title: 'Embedded · Automotive',

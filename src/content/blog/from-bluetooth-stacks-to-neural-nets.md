@@ -2,7 +2,7 @@
 title: "From Bluetooth stacks to neural nets: why an embedded engineer moved into AI"
 description: "Years of shipping automotive embedded software taught me lessons that most AI tutorials skip. Here's why I made the move, and what I'm carrying with me."
 date: 2026-09-29
-tags: ["career", "embedded", "ai", "edge-ai"]
+tags: ["career", "embedded", "ai", "genai"]
 ---
 
 For years my world was measured in bytes and milliseconds. I wrote Embedded C for car infotainment systems,
@@ -29,16 +29,17 @@ So I started an MS in Artificial Intelligence & Machine Learning and moved into 
 3. **Reliability is the product.** A model that is 95% accurate in a notebook and crashes in production is worth nothing.
 4. **Know the whole stack.** Understanding where data is born, on the device, helps you design better features and pipelines.
 
-## Where I'm heading: Edge AI
+## Where I'm heading: Generative AI and ML
 
-The most exciting place for me is where both worlds meet: **running intelligence on the device itself**.
-Quantised models on microcontrollers, on-device speech in vehicles, anomaly detection right next to the sensor.
+The most exciting place for me right now is **Generative AI and machine learning**: building AI systems that
+are not just impressive in a demo, but reliable, measurable and useful in the real world. That is exactly where
+an embedded engineer's habits (test everything, respect constraints, never ship a flaky system) pay off.
 
 I'll document everything I build on this blog, including the failures.
 
 ```python
 # The journey, in one line
-career = ["Embedded C", "Bluetooth", "Infotainment"] + ["Python", "ML", "Edge AI"]
+career = ["Embedded C", "Bluetooth", "Infotainment"] + ["Python", "ML", "Generative AI"]
 ```
 
 Thanks for reading. If you're making a similar move, [reach out](https://www.linkedin.com/in/swapnilalase/).

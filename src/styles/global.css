@@ -1,22 +1,8 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-@custom-variant dark (&:where(.dark, .dark *));
-
 /* ───────────── Design tokens (edit colours here) ───────────── */
 :root {
-  --bg: #f7f8fc;
-  --bg-soft: #eef1f8;
-  --card: #ffffff;
-  --border: #dde2ee;
-  --fg: #0d1426;
-  --muted: #5a6480;
-  --amber: #c77a00;   /* embedded / circuit */
-  --cyan: #0891b2;    /* AI / neural */
-  --violet: #7c3aed;  /* AI / neural */
-  --glow: rgba(8, 145, 178, 0.10);
-}
-:root.dark {
   --bg: #070b16;
   --bg-soft: #0c1222;
   --card: #0f1629;
@@ -49,9 +35,8 @@ html {
   scroll-padding-top: 5rem;
   background: var(--bg);
   color: var(--fg);
-  color-scheme: light;
+  color-scheme: dark;
 }
-html.dark { color-scheme: dark; }
 
 body {
   background: var(--bg);

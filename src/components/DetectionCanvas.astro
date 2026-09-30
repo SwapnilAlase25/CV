@@ -307,7 +307,7 @@
       ctx.fillStyle = col.muted;
       ctx.globalAlpha = 0.9;
       const n = objs.length + (cursorVisible ? 1 : 0);
-      const hud = `LIVE  model: yolo-edge  ·  ${fps} FPS  ·  ${latency.toFixed(0)} ms  ·  ${n} objects`;
+      const hud = `LIVE  model: object-detector  ·  ${fps} FPS  ·  ${latency.toFixed(0)} ms  ·  ${n} objects`;
       ctx.fillText(hud, W - 24, 84);
       ctx.fillStyle = col.cyan;
       ctx.globalAlpha = 0.5 + 0.5 * Math.abs(Math.sin(time * 2.5));

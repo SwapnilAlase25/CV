@@ -23,17 +23,9 @@ const links = [
       {links.map((l) => (
         <a href={l.href} class="px-3 py-2 rounded-lg text-sm text-muted hover:text-fg hover:bg-bg-soft transition-colors">{l.label}</a>
       ))}
-      <button data-theme-toggle class="ml-2 p-2 rounded-lg text-muted hover:text-fg hover:bg-bg-soft" aria-label="Toggle colour theme">
-        <Icon name="sun" class="w-5 h-5 hidden dark:block" />
-        <Icon name="moon" class="w-5 h-5 dark:hidden" />
-      </button>
     </div>
 
     <div class="flex md:hidden items-center gap-1">
-      <button data-theme-toggle class="p-2 rounded-lg text-muted hover:text-fg" aria-label="Toggle colour theme">
-        <Icon name="sun" class="w-5 h-5 hidden dark:block" />
-        <Icon name="moon" class="w-5 h-5 dark:hidden" />
-      </button>
       <button id="menu-btn" class="p-2 rounded-lg text-muted hover:text-fg" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
         <Icon name="menu" class="w-6 h-6" />
       </button>
@@ -68,10 +60,4 @@ const links = [
   });
   menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => menu.classList.add('hidden')));
 
-  document.querySelectorAll('[data-theme-toggle]').forEach((el) =>
-    el.addEventListener('click', () => {
-      const dark = document.documentElement.classList.toggle('dark');
-      try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch {}
-    })
-  );
 </script>
