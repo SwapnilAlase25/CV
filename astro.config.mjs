@@ -11,8 +11,7 @@ import tailwindcss from '@tailwindcss/vite';
 //   site: 'https://swapnilalase.cv',          base: '/'
 // ────────────────────────────────────────────────────────────────────────────
 export default defineConfig({
-  site: 'https://swapnilalase25.github.io',
-  base: '/CV',
+  site: 'https://swapnilalase.tech',
   trailingSlash: 'ignore',
   integrations: [mdx(), sitemap()],
   markdown: {
