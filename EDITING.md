@@ -25,7 +25,7 @@ If the build fails (red ✗ in Actions), open the failed run and read the error;
 ### 🔴 TODO for you
 In `experience` → the Forvia **AI Team** entry → `points`: replace the two general bullets with **3–4 concrete bullets about your real AI work**.
 Formula: *action verb + what you built + tech + measurable result*.
-> e.g. "Built a Python pipeline that classifies infotainment test logs with scikit-learn, cutting manual triage time by 40%."
+> e.g. "Built an internal assistant on <tool> used by <N> teams, cutting the time spent searching for information by <X>%." (use only real numbers)
 
 ## 2. Add your photo
 1. Upload a square photo to `public/images/` (e.g. `profile.jpg`, ~600×600): *Add file → Upload files*.

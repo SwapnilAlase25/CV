@@ -17,22 +17,22 @@ export const profile = {
   /** Big hero headline + the rotating words under it. */
   headline: 'Engineering AI that works in the real world.',
   rotating: [
-    'Machine Learning',
-    'Data-driven products',
     'Generative AI',
-    'Automotive intelligence',
-    'Python · SQL · Statistics',
+    'RAG chatbots',
+    'AI on Azure',
+    'Requirements engineering',
+    'Automotive software',
   ],
 
   /** One paragraph used in the hero and for SEO/social previews. */
   summary:
-    'Senior AI Engineer at Forvia with an unusual edge: years of shipping production automotive embedded software before moving into AI. I combine machine learning and data analysis with a deep understanding of how real hardware, real constraints and real users behave.',
+    'Senior AI Engineer at Forvia with an unusual edge: years of shipping production automotive embedded software before moving into AI. I build AI tools for engineering teams and the wider company, such as a requirements generator and a company-wide RAG chatbot, grounded in a deep understanding of how real hardware, real constraints and real users behave.',
 
   /** "About" section — each string is a paragraph. */
   about: [
     'I started my career close to the metal — writing Embedded C, bringing up Bluetooth links between car radios and phones, and hardening infotainment systems for OEMs like Volvo, Renault, Mack Trucks and Stellantis.',
-    'Along the way I realised the most interesting problems were no longer just about moving bytes reliably, but about making systems that learn. So I moved into Forvia’s AI team and began an MS in Artificial Intelligence & Machine Learning (Scaler Neovarsity · Woolf University).',
-    'Today I work on AI while keeping the engineering discipline that embedded taught me: measure everything, respect constraints, and ship things that work in the real world. My focus now is Generative AI and machine learning: building AI systems that are reliable, measurable and useful in the real world.',
+    'Along the way I realised the most interesting problems were no longer just about moving bytes reliably, but about building software that can understand and assist. So I moved into Forvia’s AI team and began an MS in Artificial Intelligence & Machine Learning (Scaler Neovarsity · Woolf University).',
+    'Today I work on AI while keeping the engineering discipline that embedded taught me: measure everything, respect constraints, and ship things that work in the real world. My focus now is Generative AI: building AI systems that are reliable, measurable and useful in the real world.',
   ],
 
   email: 'swapnilalase07@gmail.com',
@@ -73,8 +73,8 @@ export const profile = {
     { stage: 'Foundation', title: 'Electronics & Telecommunication', text: 'Bachelor of Engineering, University of Pune. First published work: an IoT digital signage system on Raspberry Pi.', kind: 'embedded' },
     { stage: 'Specialise', title: 'Embedded Systems Design', text: 'PG-Diploma at CDAC Pune — microcontrollers, RTOS, communication protocols.', kind: 'embedded' },
     { stage: 'Ship', title: 'Automotive Embedded @ Forvia', text: 'Infotainment and Bluetooth software for global OEMs; led a small team on secure phone-to-radio communication.', kind: 'embedded' },
-    { stage: 'Transform', title: 'AI Team @ Forvia + MS in AI & ML', text: 'Internal move into AI. Machine learning, statistics and data analysis applied to automotive products.', kind: 'ai' },
-    { stage: 'Next', title: 'Generative AI', text: 'Focused on Generative AI and machine learning, bringing embedded-grade engineering discipline to AI systems.', kind: 'next' },
+    { stage: 'Transform', title: 'AI Team @ Forvia + MS in AI & ML', text: 'Internal move into AI: building a requirements-generation tool (Requirement Forge) and a company-wide RAG chatbot.', kind: 'ai' },
+    { stage: 'Next', title: 'Generative AI', text: 'Focused on Generative AI, bringing embedded-grade engineering discipline to AI systems.', kind: 'next' },
   ],
 } as const;
 
@@ -99,20 +99,18 @@ export const experience: Job[] = [
     location: 'Pune, India',
     track: 'ai',
     headline:
-      'Internal transfer into Forvia’s AI team — applying machine learning and data analysis to automotive software products.',
+      'Internal transfer into Forvia’s AI team — building AI tools for engineering teams and for the whole company.',
     roles: [
       {
         title: 'Senior AI Engineer',
-        // TODO (Swapnil): replace these with 3–4 REAL impact bullets from your AI work.
-        // Formula: <action verb> + <what you built> + <tech> + <measurable result>.
-        // e.g. 'Built a Python pipeline that classifies X from vehicle logs, cutting triage time by 40%.'
+        // TODO (Swapnil): add real results when you have them (number of users/teams, time saved, adoption). Only real numbers.
         points: [
-          'Applying machine learning and statistical analysis to automotive and infotainment data.',
-          'Bringing production-engineering discipline from automotive software to AI development.',
+          'Built Requirement Forge with the AI team: a tool, built on Azure, that turns stakeholder requirements into system requirements. It generates the corner cases that are easily missed, so developers start from a more complete set of requirements.',
+          'Developed a RAG-based chatbot for the entire company on Sinequa, so everyone can use and understand the data held across the company.',
         ],
       },
     ],
-    tech: ['Python', 'SQL', 'Pandas', 'NumPy', 'Scikit-learn', 'Statistics', 'Data Visualization'],
+    tech: ['Azure', 'Sinequa', 'RAG', 'Generative AI', 'Requirements engineering'],
   },
   {
     company: 'Forvia (formerly Faurecia)',
