@@ -139,14 +139,20 @@ export const experience: Job[] = [
     company: 'Axonet Emsys Pvt. Ltd.',
     location: 'Pune, India',
     track: 'embedded',
-    headline: 'Industrial IoT hardware and firmware.',
+    headline: 'An early-stage startup building industrial IoT hardware and firmware.',
     roles: [
       {
         title: 'Embedded Intern',
-        points: ['Developed IoT gateways on PIC microcontrollers with Modbus, I²C and UART communication.'],
+        // TODO (Swapnil): add specifics when you remember them (products, boards, sensors, tools, results). Only real details.
+        points: [
+          'Developed IoT gateways on PIC microcontrollers, implementing Modbus, I²C and UART communication.',
+          'Hands-on hardware work, including soldering and assembling circuit boards.',
+          'Tested and debugged hardware and firmware together to get devices working.',
+          'Worked in a fast-moving startup, picking up a wide range of tasks across hardware, firmware and testing.',
+        ],
       },
     ],
-    tech: ['PIC', 'Modbus', 'I²C', 'UART', 'IoT'],
+    tech: ['PIC', 'Modbus', 'I²C', 'UART', 'IoT', 'Soldering', 'Hardware testing', 'Debugging'],
   },
 ];
 
