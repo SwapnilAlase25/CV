@@ -47,11 +47,9 @@ export const profile = {
   /**
    * Where things sit inside the photo, as fractions of the image (0–1 / percentages).
    * Change these only if you swap the photo (ask me to re-tune them).
-   *  - face: the detection box drawn around the face (% of image width/height)
-   *  - focus: the point shown in the centre of the small About avatar, and how far it is zoomed in
+   *  - face: the detection box drawn around the face on the hero photo (% of image width/height)
    */
   photoFace: { left: 54.5, top: 12, width: 28, height: 39 },
-  photoFocus: { x: 0.675, y: 0.26, zoom: 2.0 },
 
   /**
    * Resume PDF download. Keep false until public/resume.pdf matches the site

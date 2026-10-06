@@ -39,15 +39,16 @@ file name** (`Swapnil_Alase_CV.pdf`) to replace it. The page and button update a
 (Anything inside the PDF, such as phone number, job title and dates, is public once it is uploaded.)
 
 ## 3b. Your photo
-The photo in the hero (and the small portrait in the About section) is `src/assets/profile.webp`.
+The big photo in the hero is `src/assets/profile.webp`.
 - **Change it:** upload a new photo with **exactly the same file name** (`profile.webp`) into `src/assets/`
   (*Add file → Upload files*). It must be a **real cut-out with a transparent background** (WebP or PNG with an alpha
   channel, not a picture of a checkerboard), about 1400 px wide, with the torso running off the bottom edge
   (the hero fades it out at the bottom). The floating objects in the hero read the photo's transparency to stay out of
   the way of the person, so a proper transparent background matters.
-- **Re-tune after changing it:** in `src/data/profile.ts`, `photoFace` is the box drawn around the face (percent of the
-  image) and `photoFocus` is the point shown in the centre of the small About portrait (`x`, `y` as 0–1 of the image,
-  `zoom` = how far in). Ask me to re-tune these if you swap the photo.
+- **Re-tune after changing it:** in `src/data/profile.ts`, `photoFace` is the box drawn around the face on the hero photo
+  (percent of the image). Ask me to re-tune it if you swap the hero photo.
+- **The small portrait in About** is a separate, ready-cropped square image: `src/assets/avatar.webp`. To change it,
+  upload a new square face crop (about 480×480 px, face centred) with exactly that file name.
 - **Hide it:** set `showPhoto: false` in `src/data/profile.ts` (the monogram avatar is shown instead).
 - **Link previews:** the image shown when the link is shared on LinkedIn/WhatsApp is `public/og.png`. It is a screenshot of
   the hero, so it does not update automatically: ask me to regenerate it after you change the photo.
