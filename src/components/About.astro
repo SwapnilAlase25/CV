@@ -1,8 +1,9 @@
 ---
 import SectionHeading from './SectionHeading.astro';
 import Stats from './Stats.astro';
+import { Image } from 'astro:assets';
+import portrait from '../assets/profile.webp';
 import { profile } from '../data/profile';
-import { url } from '../utils/url';
 
 const kindStyle = {
   embedded: { dot: 'bg-amber', text: 'text-amber', ring: 'ring-amber/30' },
@@ -16,8 +17,8 @@ const kindStyle = {
   <div class="grid lg:grid-cols-[1fr_1.1fr] gap-12 items-start">
     <div class="reveal space-y-5 text-muted leading-relaxed text-lg">
       <div class="flex items-center gap-4 mb-2">
-        {profile.photo
-          ? <img src={url(`/${profile.photo}`)} alt={profile.name} width="88" height="88" class="w-22 h-22 rounded-2xl object-cover ring-2 ring-cyan/40" />
+        {profile.showPhoto
+          ? <div class="w-20 h-20 shrink-0 rounded-2xl p-[2px] bg-gradient-to-br from-amber via-cyan to-violet"><div class="w-full h-full rounded-[14px] bg-bg-soft overflow-hidden"><Image src={portrait} alt={profile.name} width={320} height={290} quality={85} class="w-full h-full object-cover origin-[43%_23%] [transform:translate(11%,23%)_scale(2)]" /></div></div>
           : <div class="w-20 h-20 rounded-2xl p-[2px] bg-gradient-to-br from-amber via-cyan to-violet"><div class="w-full h-full rounded-[14px] bg-card grid place-items-center font-display font-bold text-2xl text-gradient">{profile.initials}</div></div>}
         <div>
           <p class="font-display font-semibold text-fg text-xl">{profile.name}</p>

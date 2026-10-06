@@ -42,8 +42,8 @@ export const profile = {
     github: 'https://github.com/swapnilalase25',
   },
 
-  /** Put your photo at public/images/profile.jpg and set this to 'images/profile.jpg'. Empty = monogram avatar. */
-  photo: '',
+  /** Show your photo (src/assets/profile.webp) in the hero and About section. false = hide it (monogram avatar instead). */
+  showPhoto: true,
 
   /**
    * Resume PDF download. Keep false until public/resume.pdf matches the site

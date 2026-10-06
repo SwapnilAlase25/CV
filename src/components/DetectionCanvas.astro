@@ -35,7 +35,7 @@
   const host = canvas.parentElement as HTMLElement;
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  let W = 0, H = 0, mobile = false, textRight = 0;
+  let W = 0, H = 0, mobile = false, textRight = 0, behindPhoto = false, hasPhoto = false, photoTop = 0, photoH = 0;
   let objs: Obj[] = [];
   let col = { cyan: '#22d3ee', violet: '#a78bfa', amber: '#f5a524', muted: '#8d99b8', bg: '#070b16', fg: '#e6ebf7', dark: true };
   let running = true, last = 0, time = 0, inferTimer = 0;
@@ -56,11 +56,13 @@
     };
   }
 
-  /** Region where objects live: right side on desktop (keeps text readable), full width on mobile. */
+  /** Region where objects live. With the hero photo present, objects stay in the band above it so nothing peeks out from behind him. */
   function region() {
-    return mobile
-      ? { x0: 0, x1: W, y0: H * 0.1, y1: H * 0.95 }
-      : { x0: Math.max(W * 0.5, Math.min(textRight + 40, W - 380)), x1: W, y0: H * 0.14, y1: H * 0.9 };
+    const x0 = mobile ? 0 : Math.max(W * 0.5, Math.min(textRight + 40, W - 380));
+    const y0 = H * (mobile ? 0.1 : 0.14);
+    let y1 = H * (mobile ? 0.95 : 0.9);
+    if (hasPhoto) y1 = Math.min(y1, photoTop - (behindPhoto ? 6 : 14));
+    return { x0, x1: W, y0, y1: Math.max(y1, y0 + 150) };
   }
 
   function bboxOf(o: Obj): Box {
@@ -90,11 +92,19 @@
     // Keep objects to the right of the hero text column so the text stays readable
     const text = host.querySelector('[data-hero-text]');
     textRight = text ? text.getBoundingClientRect().right - rect.left : W * 0.5;
+    // The hero photo: on wide screens it stands in the hero (position: absolute), otherwise it follows the text
+    const photo = host.querySelector('[data-hero-photo]');
+    hasPhoto = !!photo;
+    if (photo) {
+      const pr = photo.getBoundingClientRect();
+      photoTop = pr.top - rect.top; photoH = pr.height;
+      behindPhoto = getComputedStyle(photo).position === 'absolute';
+    } else behindPhoto = false;
     canvas.width = W * dpr; canvas.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     const r = region();
-    const n = mobile ? 5 : 8;
+    const n = behindPhoto ? 4 : mobile ? 5 : 8;
     const cols = mobile ? 2 : 3;
     const rows = Math.ceil(n / cols);
     objs = Array.from({ length: n }, (_, i) => {
@@ -264,7 +274,7 @@
 
   function draw() {
     ctx.clearRect(0, 0, W, H);
-    const base = mobile ? 0.55 : 1;
+    const base = mobile ? 0.55 : behindPhoto ? 0.7 : 1;
     const r = region();
 
     // Scan line sweeping across the detection region every few seconds
@@ -374,5 +384,6 @@
     clearTimeout(rt);
     rt = window.setTimeout(() => { build(); if (reduced) draw(); }, 150);
   });
+  new ResizeObserver(() => { clearTimeout(rt); rt = window.setTimeout(() => { build(); if (reduced) draw(); }, 150); }).observe(host);
   new MutationObserver(() => { readColors(); if (reduced) draw(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 </script>

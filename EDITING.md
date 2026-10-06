@@ -38,6 +38,17 @@ To update it: on GitHub open `public/` → *Add file → Upload files*, and uplo
 file name** (`Swapnil_Alase_CV.pdf`) to replace it. The page and button update automatically.
 (Anything inside the PDF, such as phone number, job title and dates, is public once it is uploaded.)
 
+## 3b. Your photo
+The photo in the hero (and the small portrait in the About section) is `src/assets/profile.webp`.
+- **Change it:** upload a new photo with **exactly the same file name** (`profile.webp`) into `src/assets/`
+  (*Add file → Upload files*). Best results: a **cut-out with a transparent background** (WebP or PNG), about 1300 px wide,
+  with the person's torso running off the bottom edge (the hero fades it out at the bottom).
+  If you upload a PNG, name it `profile.webp` anyway, or ask me to switch the file type.
+- **Hide it:** set `showPhoto: false` in `src/data/profile.ts` (the monogram avatar is shown instead).
+- **Link previews:** the image shown when the link is shared on LinkedIn/WhatsApp is `public/og.png`. It is a screenshot of
+  the hero, so it does not update automatically: ask me to regenerate it after you change the photo.
+- The little `swapnil 0.99` detection box on the face is in `src/components/Hero.astro` (class `det-box`); delete that line to remove it.
+
 ## 4. Add a new project
 Create a file `src/content/projects/my-project-name.md` (*Add file → Create new file*). The file name becomes the URL.
 
