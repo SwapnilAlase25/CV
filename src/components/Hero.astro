@@ -9,10 +9,24 @@ import { url } from '../utils/url';
 <section class="relative min-h-[100svh] flex flex-col justify-center overflow-hidden">
   <div class="absolute inset-0 bg-grid" aria-hidden="true"></div>
   <DetectionCanvas />
-  <div class="absolute inset-0 pointer-events-none bg-gradient-to-r from-bg via-bg/70 to-transparent md:via-bg/40" aria-hidden="true"></div>
+  <div class="absolute inset-0 pointer-events-none hidden lg:block bg-gradient-to-r from-bg via-bg/40 to-transparent" aria-hidden="true"></div>
   <div class="absolute inset-x-0 bottom-0 h-32 pointer-events-none bg-gradient-to-t from-bg to-transparent" aria-hidden="true"></div>
 
-  <div class="relative mx-auto max-w-6xl w-full px-4 sm:px-6 pt-28 pb-4 xl:pb-12">
+  {profile.showPhoto && (
+    <div data-hero-photo class="pointer-events-none relative z-10 order-first pt-20 lg:order-none lg:pt-0 lg:absolute lg:inset-x-0 lg:bottom-0">
+      <div class="mx-auto w-[62vw] max-w-[280px] md:max-w-[360px] lg:flex lg:w-full lg:max-w-6xl lg:justify-end lg:px-6">
+        <div data-hero-photo-box class="relative w-full lg:w-[min(48vw,660px)]">
+          <div class="animate-float absolute inset-x-[6%] top-[4%] bottom-0 rounded-full bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--cyan)_26%,transparent),color-mix(in_srgb,var(--violet)_12%,transparent)_55%,transparent_75%)]" aria-hidden="true"></div>
+          <div class="reveal photo-fade relative">
+            <Image src={portrait} alt="Swapnil Alase" widths={[480, 720, 1080, 1422]} sizes="(min-width: 1024px) 48vw, (min-width: 768px) 360px, 62vw" quality={90} loading="eager" fetchpriority="high" decoding="async" class="block w-full h-auto" />
+            <div class="det-box absolute" style={`left:${profile.photoFace.left}%;top:${profile.photoFace.top}%;width:${profile.photoFace.width}%;height:${profile.photoFace.height}%`} aria-hidden="true"><span class="det-label">swapnil 0.99</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+
+  <div class="relative mx-auto max-w-6xl w-full px-4 sm:px-6 pt-4 pb-8 lg:pt-28 lg:pb-12">
     <div class="max-w-2xl" data-hero-text>
       <p class="reveal inline-flex items-center gap-2 chip !text-xs !py-2 !px-3 mb-6">
         <span class="relative flex h-2 w-2">
@@ -52,22 +66,21 @@ import { url } from '../utils/url';
     </div>
   </div>
 
-  {profile.showPhoto && (
-    <div data-hero-photo class="pointer-events-none relative z-10 mx-auto w-[78vw] max-w-[340px] xl:absolute xl:right-0 xl:bottom-0 xl:mx-0 xl:w-[52vw] xl:max-w-[780px]">
-      <div class="animate-float absolute inset-x-[6%] top-[4%] bottom-0 rounded-full bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--cyan)_26%,transparent),color-mix(in_srgb,var(--violet)_12%,transparent)_55%,transparent_75%)]" aria-hidden="true"></div>
-      <div class="reveal relative [mask-image:linear-gradient(to_bottom,#000_84%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,#000_84%,transparent_100%)]">
-        <Image src={portrait} alt="Swapnil Alase" widths={[720, 1080, 1422]} sizes="(min-width: 1280px) 52vw, 78vw" quality={90} loading="eager" fetchpriority="high" decoding="async" class="block w-full h-auto" />
-        <div class="det-box absolute" style={`left:${profile.photoFace.left}%;top:${profile.photoFace.top}%;width:${profile.photoFace.width}%;height:${profile.photoFace.height}%`} aria-hidden="true"><span class="det-label">swapnil 0.99</span></div>
-      </div>
-    </div>
-  )}
-
   <a href="#about" class="no-print absolute bottom-8 left-1/2 -translate-x-1/2 text-muted hover:text-cyan animate-float hidden sm:[@media(min-height:760px)]:block" aria-label="Scroll to about">
     <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14m0 0-6-6m6 6 6-6"/></svg>
   </a>
 </section>
 
 <style>
+  .photo-fade { -webkit-mask-image: linear-gradient(to bottom, #000 84%, transparent 100%); mask-image: linear-gradient(to bottom, #000 84%, transparent 100%); }
+  @media (min-width: 1024px) {
+    .photo-fade {
+      -webkit-mask-image: linear-gradient(to bottom, #000 84%, transparent 100%), linear-gradient(to right, #000 88%, transparent 100%);
+      -webkit-mask-composite: source-in;
+      mask-image: linear-gradient(to bottom, #000 84%, transparent 100%), linear-gradient(to right, #000 88%, transparent 100%);
+      mask-composite: intersect;
+    }
+  }
   .det-box { --c: var(--cyan); border: 1px solid color-mix(in srgb, var(--c) 35%, transparent); }
   .det-box::before, .det-box::after { content: ''; position: absolute; width: 14px; height: 14px; border: 2px solid var(--c); }
   .det-box::before { left: -1px; top: -1px; border-right: 0; border-bottom: 0; }

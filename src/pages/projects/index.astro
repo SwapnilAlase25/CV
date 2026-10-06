@@ -23,7 +23,7 @@ const groups = [
         <div class="mb-12">
           <h2 class={`reveal font-mono text-xs uppercase tracking-widest mb-6 ${g.color}`}>{g.title}</h2>
           {spot.map((p) => <div class="mb-6"><AISpotlight project={p} /></div>)}
-          {items.length > 0 && <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">{items.map((p) => <ProjectCard project={p} />)}</div>}
+          {items.length > 0 && <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:[&>*:last-child:nth-child(odd)]:col-span-2 lg:[&>*:last-child:nth-child(odd)]:col-span-1">{items.map((p) => <ProjectCard project={p} />)}</div>}
         </div>
       );
     })}
