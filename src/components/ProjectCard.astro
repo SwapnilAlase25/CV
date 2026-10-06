@@ -6,7 +6,7 @@ import type { CollectionEntry } from 'astro:content';
 interface Props { project: CollectionEntry<'projects'>; }
 const { project } = Astro.props;
 const d = project.data;
-const catLabel = { ai: 'AI / ML', embedded: 'Embedded', foundation: 'Data foundations' }[d.category];
+const catLabel = { ai: 'AI', embedded: 'Embedded', foundation: 'Data foundations' }[d.category];
 const catChip = { ai: 'chip-ai', embedded: 'chip-embedded', foundation: 'chip-violet' }[d.category];
 const statusLabel = { live: '', building: 'In progress', archived: '' }[d.status];
 ---

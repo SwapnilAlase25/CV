@@ -7,14 +7,14 @@ import { getProjects } from '../../utils/content';
 
 const projects = await getProjects();
 const groups = [
-  { key: 'ai', title: 'AI & Machine Learning', color: 'text-cyan' },
+  { key: 'ai', title: 'AI & Generative AI', color: 'text-cyan' },
   { key: 'embedded', title: 'Embedded & Automotive', color: 'text-amber' },
   { key: 'foundation', title: 'Data foundations', color: 'text-violet' },
 ] as const;
 ---
 <BaseLayout title="Projects" description="AI, embedded and data projects by Swapnil Alase.">
   <section class="mx-auto max-w-6xl px-4 sm:px-6 pt-32 pb-12">
-    <SectionHeading label="Projects" title="Everything I’ve built" subtitle="From Bluetooth stacks in production cars to machine learning experiments. The AI section grows as I ship." />
+    <SectionHeading label="Projects" title="Everything I’ve built" subtitle="From Bluetooth stacks in production cars to AI tools used across a company. The AI section grows as I ship." />
     {groups.map((g) => {
       const all = projects.filter((p) => p.data.category === g.key);
       const spot = all.filter((p) => p.data.spotlight);

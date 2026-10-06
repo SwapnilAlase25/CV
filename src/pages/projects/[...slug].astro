@@ -13,7 +13,7 @@ export async function getStaticPaths() {
 const { project } = Astro.props;
 const { Content } = await render(project);
 const d = project.data;
-const cat = { ai: ['AI / ML', 'chip-ai'], embedded: ['Embedded', 'chip-embedded'], foundation: ['Data foundations', 'chip-violet'] }[d.category];
+const cat = { ai: ['AI', 'chip-ai'], embedded: ['Embedded', 'chip-embedded'], foundation: ['Data foundations', 'chip-violet'] }[d.category];
 ---
 <BaseLayout title={d.title} description={d.summary} type="article">
   <article class="mx-auto max-w-3xl px-4 sm:px-6 pt-32 pb-12">

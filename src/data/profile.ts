@@ -26,7 +26,7 @@ export const profile = {
 
   /** One paragraph used in the hero and for SEO/social previews. */
   summary:
-    'Senior AI Engineer at Forvia with an unusual edge: years of shipping production automotive embedded software before moving into AI. I build AI tools for engineering teams and the wider company, such as a requirements generator and a company-wide RAG chatbot, grounded in a deep understanding of how real hardware, real constraints and real users behave.',
+    'Senior AI Engineer at Forvia with an unusual edge: years of shipping production automotive embedded software before moving into AI. I build AI tools for engineering teams and the wider company, such as Requirement Forge (a requirements generator) and KnowTrack (a company-wide RAG chatbot), grounded in a deep understanding of how real hardware, real constraints and real users behave.',
 
   /** "About" section — each string is a paragraph. */
   about: [
@@ -73,7 +73,7 @@ export const profile = {
     { stage: 'Foundation', title: 'Electronics & Telecommunication', text: 'Bachelor of Engineering, University of Pune. First published work: an IoT digital signage system on Raspberry Pi.', kind: 'embedded' },
     { stage: 'Specialise', title: 'Embedded Systems Design', text: 'PG-Diploma at CDAC Pune — microcontrollers, RTOS, communication protocols.', kind: 'embedded' },
     { stage: 'Ship', title: 'Automotive Embedded @ Forvia', text: 'Infotainment and Bluetooth software for global OEMs; led a small team on secure phone-to-radio communication.', kind: 'embedded' },
-    { stage: 'Transform', title: 'AI Team @ Forvia + MS in AI & ML', text: 'Internal move into AI: building a requirements-generation tool (Requirement Forge) and a company-wide RAG chatbot.', kind: 'ai' },
+    { stage: 'Transform', title: 'AI Team @ Forvia + MS in AI & ML', text: 'Internal move into AI: building a requirements-generation tool (Requirement Forge) and KnowTrack, a company-wide RAG chatbot.', kind: 'ai' },
     { stage: 'Next', title: 'Generative AI', text: 'Focused on Generative AI, bringing embedded-grade engineering discipline to AI systems.', kind: 'next' },
   ],
 } as const;
@@ -106,7 +106,7 @@ export const experience: Job[] = [
         // TODO (Swapnil): add real results when you have them (number of users/teams, time saved, adoption). Only real numbers.
         points: [
           'Built Requirement Forge with the AI team: a tool, built on Azure, that turns stakeholder requirements into system requirements. It generates the corner cases that are easily missed, so developers start from a more complete set of requirements.',
-          'Developed a RAG-based chatbot for the entire company on Sinequa, so everyone can use and understand the data held across the company.',
+          'Developed KnowTrack, a RAG-based chatbot for the entire company, on Sinequa, so everyone can use and understand the data held across the company.',
         ],
       },
     ],

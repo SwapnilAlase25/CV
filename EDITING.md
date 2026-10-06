@@ -111,7 +111,7 @@ The newest 3 posts automatically appear on the home page.
 ## 6. Optional: spotlight card with the live neural-network playground
 The site still contains an optional big "spotlight" project card with an interactive neural-network playground, but it
 is **not used right now**. To bring it back, add `spotlight: true`, `playground: true` and a `roadmap:` list to a
-project's front matter (see the field list above). Your current AI project is `src/content/projects/rag-chatbot.md`.
+project's front matter (see the field list above). Your current AI project is `src/content/projects/knowtrack.md`.
 
 ## 7. Change colours
 Edit the tokens at the top of `src/styles/global.css` (`--amber`, `--cyan`, `--violet`, backgrounds).
