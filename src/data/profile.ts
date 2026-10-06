@@ -49,8 +49,8 @@ export const profile = {
    * Resume PDF download. Keep false until public/resume.pdf matches the site
    * (title, AI role). Then drop the PDF into /public and set this to true.
    */
-  showResumePdf: false,
-  resumePdf: 'resume.pdf',
+  showResumePdf: true,
+  resumePdf: 'Swapnil_Alase_CV.pdf',
 
   /** Numbers shown in the stats strip. */
   stats: [

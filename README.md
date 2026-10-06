@@ -13,7 +13,7 @@ Built with [Astro](https://astro.build) + Tailwind CSS and hosted free on **GitH
 - Dark "circuit → neural" design with an animated hero (embedded traces flowing into a neural network)
 - Sections: About & journey, experience, projects, skills, education, blog, contact
 - `/projects` and `/blog`: each item is one Markdown file
-- `/resume`: a print-friendly CV page ("Print / Save as PDF")
+- `/resume`: shows your CV PDF inline, with Download and Open buttons
 - SEO: meta tags, social preview image, sitemap and JSON-LD `Person` schema
 - Fast static HTML, mobile-first, respects `prefers-reduced-motion`
 
@@ -22,7 +22,7 @@ Built with [Astro](https://astro.build) + Tailwind CSS and hosted free on **GitH
 src/data/profile.ts        ← name, headline, experience, skills, education (edit me!)
 src/content/projects/*.md  ← one file per project
 src/content/blog/*.md      ← one file per blog post
-public/                    ← images, favicon, og.png, resume.pdf, CNAME
+public/                    ← images, favicon, og.png, Swapnil_Alase_CV.pdf, CNAME
 src/components/            ← UI sections (Hero, Experience, Skills, …)
 src/pages/                 ← routes (/, /projects, /blog, /resume)
 astro.config.mjs           ← site URL + base path

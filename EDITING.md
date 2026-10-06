@@ -31,11 +31,12 @@ Formula: *action verb + what you built + tech + measurable result*.
 1. Upload a square photo to `public/images/` (e.g. `profile.jpg`, ~600×600): *Add file → Upload files*.
 2. In `profile.ts` set `photo: 'images/profile.jpg'`.
 
-## 3. Resume PDF download button
-1. Upload your updated resume as `public/resume.pdf`.
-2. In `profile.ts` set `showResumePdf: true`.
-(It's off for now so the old PDF, which has a different title, doesn't contradict the site.)
-The `/resume` page also has a **Print / Save as PDF** button that always matches the site.
+## 3. Your CV (PDF)
+The CV shown on the **Resume** page and downloaded by the **Download CV** button is the file
+`public/Swapnil_Alase_CV.pdf`.
+To update it: on GitHub open `public/` → *Add file → Upload files*, and upload your new CV with **exactly the same
+file name** (`Swapnil_Alase_CV.pdf`) to replace it. The page and button update automatically.
+(Anything inside the PDF, such as phone number, job title and dates, is public once it is uploaded.)
 
 ## 4. Add a new project
 Create a file `src/content/projects/my-project-name.md` (*Add file → Create new file*). The file name becomes the URL.
@@ -92,11 +93,10 @@ print("code blocks get syntax highlighting")
 ```
 The newest 3 posts automatically appear on the home page.
 
-## 6. The spotlight AI project
-The big card with the live neural-network playground comes from `src/content/projects/ai-lab.md`
-(`spotlight: true`, `playground: true`). As you make progress, update its `roadmap` statuses
-(`todo` → `active` → `done`); the progress bar updates automatically.
-When your first real AI project is ready, set `spotlight: true` on that project and `false` (or `draft: true`) on this placeholder.
+## 6. Optional: spotlight card with the live neural-network playground
+The site still contains an optional big "spotlight" project card with an interactive neural-network playground, but it
+is **not used right now**. To bring it back, add `spotlight: true`, `playground: true` and a `roadmap:` list to a
+project's front matter (see the field list above). Your current AI project is `src/content/projects/rag-chatbot.md`.
 
 ## 7. Change colours
 Edit the tokens at the top of `src/styles/global.css` (`--amber`, `--cyan`, `--violet`, backgrounds).
