@@ -5,6 +5,12 @@ import { Image } from 'astro:assets';
 import portrait from '../assets/profile.webp';
 import { profile } from '../data/profile';
 
+// Centre the face in the small avatar: size/offset the image so the "focus" point lands in the middle of the frame
+const focus = profile.photoFocus;
+const imgWidth = focus.zoom * (portrait.width / portrait.height) * 100;
+const imgLeft = 50 - focus.x * imgWidth;
+const imgTop = 54 - focus.y * focus.zoom * 100;
+
 const kindStyle = {
   embedded: { dot: 'bg-amber', text: 'text-amber', ring: 'ring-amber/30' },
   ai: { dot: 'bg-cyan', text: 'text-cyan', ring: 'ring-cyan/30' },
@@ -18,7 +24,7 @@ const kindStyle = {
     <div class="reveal space-y-5 text-muted leading-relaxed text-lg">
       <div class="flex items-center gap-4 mb-2">
         {profile.showPhoto
-          ? <div class="w-20 h-20 shrink-0 rounded-2xl p-[2px] bg-gradient-to-br from-amber via-cyan to-violet"><div class="w-full h-full rounded-[14px] bg-bg-soft overflow-hidden"><Image src={portrait} alt={profile.name} width={320} height={290} quality={85} class="w-full h-full object-cover origin-[43%_23%] [transform:translate(11%,23%)_scale(2)]" /></div></div>
+          ? <div class="w-20 h-20 shrink-0 rounded-2xl p-[2px] bg-gradient-to-br from-amber via-cyan to-violet"><div class="relative w-full h-full rounded-[14px] bg-bg-soft overflow-hidden"><Image src={portrait} alt={profile.name} width={700} height={Math.round(700 * portrait.height / portrait.width)} quality={88} class="absolute max-w-none h-auto" style={`width:${imgWidth}%;left:${imgLeft}%;top:${imgTop}%`} /></div></div>
           : <div class="w-20 h-20 rounded-2xl p-[2px] bg-gradient-to-br from-amber via-cyan to-violet"><div class="w-full h-full rounded-[14px] bg-card grid place-items-center font-display font-bold text-2xl text-gradient">{profile.initials}</div></div>}
         <div>
           <p class="font-display font-semibold text-fg text-xl">{profile.name}</p>

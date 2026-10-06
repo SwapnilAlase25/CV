@@ -53,11 +53,11 @@ import { url } from '../utils/url';
   </div>
 
   {profile.showPhoto && (
-    <div data-hero-photo class="pointer-events-none relative z-10 mx-auto w-[78vw] max-w-[340px] xl:absolute xl:right-0 xl:bottom-0 xl:mx-0 xl:w-[46vw] xl:max-w-[680px]">
+    <div data-hero-photo class="pointer-events-none relative z-10 mx-auto w-[78vw] max-w-[340px] xl:absolute xl:right-0 xl:bottom-0 xl:mx-0 xl:w-[52vw] xl:max-w-[780px]">
       <div class="animate-float absolute inset-x-[6%] top-[4%] bottom-0 rounded-full bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--cyan)_26%,transparent),color-mix(in_srgb,var(--violet)_12%,transparent)_55%,transparent_75%)]" aria-hidden="true"></div>
       <div class="reveal relative [mask-image:linear-gradient(to_bottom,#000_84%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,#000_84%,transparent_100%)]">
-        <Image src={portrait} alt="Swapnil Alase" widths={[480, 720, 1000]} sizes="(min-width: 1280px) 46vw, 78vw" quality={85} loading="eager" fetchpriority="high" decoding="async" class="block w-full h-auto" />
-        <div class="det-box absolute left-[31%] top-[7.5%] h-[34%] w-[25.5%]" aria-hidden="true"><span class="det-label">swapnil 0.99</span></div>
+        <Image src={portrait} alt="Swapnil Alase" widths={[720, 1080, 1422]} sizes="(min-width: 1280px) 52vw, 78vw" quality={90} loading="eager" fetchpriority="high" decoding="async" class="block w-full h-auto" />
+        <div class="det-box absolute" style={`left:${profile.photoFace.left}%;top:${profile.photoFace.top}%;width:${profile.photoFace.width}%;height:${profile.photoFace.height}%`} aria-hidden="true"><span class="det-label">swapnil 0.99</span></div>
       </div>
     </div>
   )}

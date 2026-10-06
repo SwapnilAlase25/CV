@@ -36,6 +36,10 @@
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   let W = 0, H = 0, mobile = false, textRight = 0, behindPhoto = false, hasPhoto = false, photoTop = 0, photoH = 0;
+  // Silhouette of the hero photo (from its transparency), so objects can drift through the empty space around the person
+  let photoRect = { x: 0, y: 0, w: 0, h: 0 };
+  let mask: { cols: number; rows: number; data: Uint8Array } | null = null;
+  const heroImg = host.querySelector('[data-hero-photo] img') as HTMLImageElement | null;
   let objs: Obj[] = [];
   let col = { cyan: '#22d3ee', violet: '#a78bfa', amber: '#f5a524', muted: '#8d99b8', bg: '#070b16', fg: '#e6ebf7', dark: true };
   let running = true, last = 0, time = 0, inferTimer = 0;
@@ -58,12 +62,72 @@
 
   /** Region where objects live. With the hero photo present, objects stay in the band above it so nothing peeks out from behind him. */
   function region() {
+    if (behindPhoto) return { x0: Math.max(W * 0.45, textRight + 36), x1: W - 6, y0: H * 0.12, y1: H - 80 };
     const x0 = mobile ? 0 : Math.max(W * 0.5, Math.min(textRight + 40, W - 380));
     const y0 = H * (mobile ? 0.1 : 0.14);
     let y1 = H * (mobile ? 0.95 : 0.9);
     if (hasPhoto) y1 = Math.min(y1, photoTop - (behindPhoto ? 6 : 14));
     return { x0, x1: W, y0, y1: Math.max(y1, y0 + 150) };
   }
+
+  function buildMask(img: HTMLImageElement) {
+    if (!img.naturalWidth) return;
+    const cols = 96, rows = Math.max(1, Math.round((cols * img.naturalHeight) / img.naturalWidth));
+    const c = document.createElement('canvas'); c.width = cols; c.height = rows;
+    const g = c.getContext('2d', { willReadFrequently: true })!;
+    g.drawImage(img, 0, 0, cols, rows);
+    let px: Uint8ClampedArray;
+    try { px = g.getImageData(0, 0, cols, rows).data; } catch { return; }
+    const solid = new Uint8Array(cols * rows);
+    for (let i = 0; i < solid.length; i++) solid[i] = px[i * 4 + 3] > 24 ? 1 : 0;
+    const data = new Uint8Array(cols * rows); // dilate by one cell so objects keep a small distance from the silhouette
+    for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+      let v = 0;
+      for (let dy = -1; dy <= 1 && !v; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const xx = x + dx, yy = y + dy;
+        if (xx >= 0 && xx < cols && yy >= 0 && yy < rows && solid[yy * cols + xx]) { v = 1; break; }
+      }
+      data[y * cols + x] = v;
+    }
+    mask = { cols, rows, data };
+  }
+
+  function solidAt(x: number, y: number) {
+    const r = photoRect;
+    if (x < r.x || x > r.x + r.w || y < r.y || y > r.y + r.h) return false;
+    if (!mask) return true; // until the mask is ready, treat the whole photo as solid
+    const cx = Math.min(mask.cols - 1, Math.floor(((x - r.x) / r.w) * mask.cols));
+    const cy = Math.min(mask.rows - 1, Math.floor(((y - r.y) / r.h) * mask.rows));
+    return mask.data[cy * mask.cols + cx] === 1;
+  }
+
+  /** Space an object (icon + box + label tag) takes up when centred at (x, y). The label is left-aligned with the box and can be wider than it. */
+  function footprint(o: Obj, x = o.x, y = o.y) {
+    const c = CLASSES[o.cls];
+    const boxW = c.w * o.s + 16;
+    const labelW = (o.cls.length + 5) * 6.7 + 12;
+    const w = Math.max(boxW, labelW);
+    return { w, h: c.h * o.s + 34, cx: x - boxW / 2 + w / 2, cy: y - 9 };
+  }
+  function blockedAt(o: Obj, x: number, y: number) {
+    const f = footprint(o, x, y), pad = 6;
+    const x0 = f.cx - f.w / 2 - pad, x1 = f.cx + f.w / 2 + pad, y0 = f.cy - f.h / 2 - pad, y1 = f.cy + f.h / 2 + pad;
+    for (let i = 0; i <= 4; i++) for (let j = 0; j <= 3; j++) if (solidAt(x0 + ((x1 - x0) * i) / 4, y0 + ((y1 - y0) * j) / 3)) return true;
+    return false;
+  }
+  function outsideRegion(o: Obj, x: number, y: number) {
+    const r = region(), f = footprint(o, x, y);
+    return f.cx - f.w / 2 < r.x0 || f.cx + f.w / 2 > r.x1 || f.cy - f.h / 2 < r.y0 || f.cy + f.h / 2 > r.y1;
+  }
+  function overlapsOthers(o: Obj, x: number, y: number) {
+    const f = footprint(o, x, y);
+    return objs.some((p) => {
+      if (p === o) return false;
+      const g = footprint(p);
+      return Math.abs(f.cx - g.cx) < (f.w + g.w) / 2 + 6 && Math.abs(f.cy - g.cy) < (f.h + g.h) / 2 + 6;
+    });
+  }
+  const badSpot = (o: Obj, x: number, y: number) => outsideRegion(o, x, y) || blockedAt(o, x, y);
 
   function bboxOf(o: Obj): Box {
     const c = CLASSES[o.cls];
@@ -80,6 +144,7 @@
       vx: dir * rand(8, 22), vy: rand(-3, 3),
       det: { x, y, w: 0, h: 0 }, shown: { x, y, w: 0, h: 0 }, conf: rand(0.9, 0.99),
     };
+    if (behindPhoto) { const a = rand(0, Math.PI * 2), v = rand(14, 26); o.vx = Math.cos(a) * v; o.vy = Math.sin(a) * v; }
     o.det = bboxOf(o);
     o.shown = spawned ? { x: x - 4, y: y - 4, w: 8, h: 8 } : { ...o.det };
     return o;
@@ -98,13 +163,29 @@
     if (photo) {
       const pr = photo.getBoundingClientRect();
       photoTop = pr.top - rect.top; photoH = pr.height;
+      photoRect = { x: pr.left - rect.left, y: pr.top - rect.top, w: pr.width, h: pr.height };
       behindPhoto = getComputedStyle(photo).position === 'absolute';
     } else behindPhoto = false;
     canvas.width = W * dpr; canvas.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     const r = region();
-    const n = behindPhoto ? 4 : mobile ? 5 : 8;
+    if (behindPhoto) {
+      // Scatter objects through the empty space around the person (above the shoulders, beside the head and arms)
+      objs = [];
+      for (let i = 0; i < 7; i++) {
+        const o = makeObj(NAMES[i % NAMES.length], r.x0, r.y0);
+        for (let t = 0; t < 600; t++) {
+          const x = rand(r.x0, r.x1), y = rand(r.y0, r.y1);
+          if (badSpot(o, x, y) || overlapsOthers(o, x, y)) continue;
+          o.x = x; o.y = y; o.det = bboxOf(o); o.shown = { ...o.det };
+          objs.push(o);
+          break;
+        }
+      }
+      return;
+    }
+    const n = mobile ? 5 : 8;
     const cols = mobile ? 2 : 3;
     const rows = Math.ceil(n / cols);
     objs = Array.from({ length: n }, (_, i) => {
@@ -230,6 +311,7 @@
   }
 
   function edgeAlpha(o: Obj) {
+    if (behindPhoto) return 1;
     const r = region();
     const d = Math.min(o.x - r.x0, r.x1 - o.x);
     return Math.max(0, Math.min(1, d / 80));
@@ -239,11 +321,30 @@
     time += dt;
     const r = region();
     for (const o of objs) {
+      if (behindPhoto) {
+        const nx = o.x + o.vx * dt, ny = o.y + o.vy * dt;
+        if (!badSpot(o, nx, ny)) { o.x = nx; o.y = ny; }
+        else if (!badSpot(o, o.x - o.vx * dt, ny)) { o.vx *= -1; o.x += o.vx * dt; o.y = ny; }
+        else if (!badSpot(o, nx, o.y - o.vy * dt)) { o.vy *= -1; o.x = nx; o.y += o.vy * dt; }
+        else { o.vx *= -1; o.vy *= -1; const a = Math.atan2(o.vy, o.vx) + rand(-0.6, 0.6), v = Math.hypot(o.vx, o.vy); o.vx = Math.cos(a) * v; o.vy = Math.sin(a) * v; }
+        continue;
+      }
       o.x += o.vx * dt; o.y += o.vy * dt;
       if (o.y < r.y0 + 20 || o.y > r.y1 - 20) o.vy *= -1;
       const m = 90;
       if (o.x > r.x1 + m) o.x = r.x0 - m + 10;
       if (o.x < r.x0 - m) o.x = r.x1 + m - 10;
+    }
+    if (behindPhoto) {
+      // keep objects from sitting on top of each other
+      for (let i = 0; i < objs.length; i++) for (let j = i + 1; j < objs.length; j++) {
+        const a = objs[i], b = objs[j], f = footprint(a), g = footprint(b);
+        if (Math.abs(f.cx - g.cx) < (f.w + g.w) / 2 && Math.abs(f.cy - g.cy) < (f.h + g.h) / 2) {
+          const dx = f.cx - g.cx, dy = f.cy - g.cy;
+          if (Math.abs(dx) / (f.w + g.w) > Math.abs(dy) / (f.h + g.h)) { const sgn = dx >= 0 ? 1 : -1; a.vx = Math.abs(a.vx) * sgn; b.vx = -Math.abs(b.vx) * sgn; }
+          else { const sgn = dy >= 0 ? 1 : -1; a.vy = Math.abs(a.vy) * sgn; b.vy = -Math.abs(b.vy) * sgn; }
+        }
+      }
     }
     // "Inference" runs at ~12 Hz: detections update with a little noise, like a real model
     inferTimer -= dt;
@@ -274,7 +375,7 @@
 
   function draw() {
     ctx.clearRect(0, 0, W, H);
-    const base = mobile ? 0.55 : behindPhoto ? 0.7 : 1;
+    const base = mobile ? 0.55 : behindPhoto ? 0.9 : 1;
     const r = region();
 
     // Scan line sweeping across the detection region every few seconds
@@ -357,16 +458,34 @@
     cursor.x = p.x; cursor.y = p.y;
     if (e.pointerType !== 'mouse') { cursor.shown = { x: p.x - 6, y: p.y - 6, w: 12, h: 12 }; cursor.until = performance.now() + 1500; }
     const o = makeObj(NAMES[Math.floor(Math.random() * NAMES.length)], p.x, p.y, true);
-    // keep newly spawned objects inside the region so they are visible
-    const r = region();
-    o.x = Math.min(Math.max(o.x, r.x0 + 60), r.x1 - 60);
+    if (behindPhoto) {
+      // spawn at the nearest empty spot to the click (never on top of the person or another object)
+      let found: { x: number; y: number } | null = null;
+      for (let rad = 0; rad <= 260 && !found; rad += 26) {
+        for (let k = 0; k < 12 && !found; k++) {
+          const a = (k / 12) * Math.PI * 2, x = p.x + Math.cos(a) * rad, y = p.y + Math.sin(a) * rad;
+          if (!badSpot(o, x, y) && !overlapsOthers(o, x, y)) found = { x, y };
+        }
+      }
+      pulses.push({ x: p.x, y: p.y, t: 0 });
+      if (!found) return;
+      o.x = found.x; o.y = found.y; o.shown = { x: o.x - 4, y: o.y - 4, w: 8, h: 8 };
+    } else {
+      // keep newly spawned objects inside the region so they are visible
+      const r = region();
+      o.x = Math.min(Math.max(o.x, r.x0 + 60), r.x1 - 60);
+    }
     objs.push(o);
-    pulses.push({ x: p.x, y: p.y, t: 0 });
+    if (!behindPhoto) pulses.push({ x: p.x, y: p.y, t: 0 });
     const spawned = objs.filter((x) => x.spawned);
     if (spawned.length > 6) objs.splice(objs.indexOf(spawned[0]), 1);
     if (reduced) draw();
   });
 
+  if (heroImg) {
+    if (heroImg.complete && heroImg.naturalWidth) buildMask(heroImg);
+    else heroImg.addEventListener('load', () => { buildMask(heroImg); build(); if (reduced) draw(); });
+  }
   readColors();
   build();
   if (reduced) {
